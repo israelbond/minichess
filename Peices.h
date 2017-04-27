@@ -3,6 +3,8 @@
 #include <iostream>
 #include <cstring>
 #include <string>
+using namespace std;
+
 
 class Peice
 {
@@ -11,7 +13,7 @@ class Peice
         ~Peice();
     protected:
         char type;
-        Point * shape;
+//        Point * shape;
 
 };
 
