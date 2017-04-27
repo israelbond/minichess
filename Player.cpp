@@ -38,6 +38,6 @@ void Player::Display_Player()
     cout<<"PLAYER "<<playing<<endl;
     cout<<"turn # "<<turn_count<<endl;
     for(int i = 0; i<ROW; ++i)
-        cout<<board[i]<<endl;
+        fprintf(stdout,"%s\n",board[i]);
 }
 

@@ -13,6 +13,5 @@ class Player
     protected:
     char playing;
     char board[ROW][COL];
-//    char ** board;
     int turn_count; 
 };
