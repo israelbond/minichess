@@ -1,9 +1,9 @@
-#include "Player.h"
+#include "Turn.h"
 
 int main()
 {
-    Player game;
-    game.Display_Player();
+    Turn game;
+    game.Display_Turn();
 
     return 0;
 }
