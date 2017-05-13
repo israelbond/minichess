@@ -36,6 +36,8 @@ class Turn
         void Set_Player(void);
         void Display_Turn(void);
         void Set_Piece_List(void);
+        int Peice_Value(char&);
+        bool Opponent(char&,char&);
         char** Moved(Move);
         char** Copy_Board(void);
         void Romove_Board(char**&);
@@ -47,7 +49,7 @@ class Turn
         char board[ROW][COL];
         int player;
         int turn_count; 
-        int list_Index;
+        int list_index;
         int list_max;
         Move piece;
         Peice pieces[MAX_P];

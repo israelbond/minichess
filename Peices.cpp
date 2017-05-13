@@ -3,18 +3,7 @@
 Point::Point() : x{0}, y{0} {}
 Point::Point(int nx, int ny) : x{nx}, y{ny} {}
 Point::~Point(){}
-/*
-class Point 
-{
-    Point();
-    Point(int&,int&);
-    void Set_Point(int&, int&);
 
-    protected:
-        int x;
-        int y;
-};
-*/
 void Point::Set_Point(int nx, int ny)
 {
     this->x = nx;
@@ -51,9 +40,9 @@ void Peice::S_B_Pawn()
     shape = new Point*[dim.x];
     for(int i=0; i<dim.x;++i) shape[i] = new Point[dim.y];
 
-    shape[0][0].Set_Point(1,0);
-    shape[0][1].Set_Point(1,-1);
-    shape[0][2].Set_Point(1,1);
+    shape[0][0].Set_Point(1,0);//move
+    shape[0][1].Set_Point(1,-1);//attack
+    shape[0][2].Set_Point(1,1);//attack
 
 }
 
@@ -65,9 +54,9 @@ void Peice::S_B_Pawn()
      shape = new Point*[dim.x];
     for(int i=0; i<dim.x;++i) shape[i] = new Point[dim.y];
 
-   shape[0][0].Set_Point(-1,0);
-    shape[0][1].Set_Point(-1,-1);
-    shape[0][2].Set_Point(-1,1);
+   shape[0][0].Set_Point(-1,0);//move
+    shape[0][1].Set_Point(-1,-1);//attack
+    shape[0][2].Set_Point(-1,1);//attack
 
 }
 

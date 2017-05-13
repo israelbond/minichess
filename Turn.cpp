@@ -1,7 +1,7 @@
 
 #include "Turn.h"
 
-Turn::Turn(): list_Index(0), list_max(0)
+Turn::Turn(): list_index(0), list_max(0)
 {
     Starting_State();
     Set_Piece_List();
@@ -72,8 +72,7 @@ void Turn::Set_Piece_List()
     pieces[6].S_Rook();
 }
 
-//Function uses standard out to produce an output of class
-//variables
+//Function uses standard out to produce an output of class variables
 void Turn::Display_Turn()
 {
 
@@ -82,24 +81,24 @@ void Turn::Display_Turn()
     for(int i = 0; i<ROW; ++i)
         fprintf(stdout,"%s\n",board[i]);
 }
-
+/*  //FUNCTION: FOO NEGAMAX...
 char** Turn::Moved(Move to_move)
 {
-    //if target piece exits
+    //determine valid board location 
     if(to_move.from.x < ROW && to_move.from.x >=0 &&
             to_move.from.y < COL-1 && to_move.from.y>=0)
     {
         //and belongs to the side on move,//XXX could cause issuses when
         //                                      eveluating '.'
-        if(player && isupper(board[to_move.from.x][to_move.from.y])
-                || !player && !isupper(board[to_move.from.x][to_move.from.y]))
+        if((player && isupper(board[to_move.from.x][to_move.from.y]))
+                ||(!player && !isupper(board[to_move.from.x][to_move.from.y])))
         {
             //return copy of the board containing the move to be returned
             char ** temp = Copy_Board();
             //move piece
             //return new board 
         }            
-
+    return temp;
     }
     //otherwise throw exception
     else
@@ -107,9 +106,40 @@ char** Turn::Moved(Move to_move)
 
 
 }
-
-
-
+*/
+//function returns values of peice on board
+int Turn::Peice_Value(char& peice)
+{
+    char temp = peice;
+     switch(temp)
+    {
+        case '.': return 0;
+        case 'P':
+        case 'p': return 1;
+        case 'N':
+        case 'n':
+        case 'B':
+        case 'b': return 3;
+        case 'Q':
+        case 'q': return 9;
+        case 'K':
+        case 'k': return 100;
+        case 'R':
+        case 'r': return 5;
+        default:
+            cout<<"\nUNRECONGNIZED CHARACTER"<<endl;
+            return 0;
+    }
+     cout<<"\nERROR PEICE VALUE"<<endl;
+     return 0;
+}    
+//function returns true on attacks and false on teammate peice value
+//XOR
+bool Turn::Opponent(char& me, char& them)
+{
+    if(isupper(me) != isupper(them)) return true;
+    return false;
+}
 
 char** Turn::Copy_Board()
 {
@@ -162,8 +192,10 @@ Move* Player::Generate_Moves()
         } 
  
     }
-    list_max = list_Index; // sets move list max limit.
-    list_Index = 0;//reset move list counter
+    list_max = list_index; // sets move list max limit.
+    list_index = 0;//reset move list counter
+
+    return NULL;
 }
 void Player::White_Moves(int& x, int& y, char& piece)
 {   
@@ -208,28 +240,172 @@ void Player::Black_Moves(int& x, int& y, char& piece)
             cout<<"\nUNRECONGNIZED BLACK CHARACTER"<<endl;
     }
 }
+
 void Player::Move_W_Pawn(int& xpos, int& ypos,Peice & to_check)
 {
     //grab values for dimentions of piece "positions"
-    int row = to_check.dim.x , col = to_check.dim.y;
+    int row = to_check.dim.x , col = to_check.dim.y, 
+        therex=0, therey=0, peicev=0;
+    //values for setting moves
+    Point from_here;
+    from_here.Set_Point(xpos,ypos);
+    Point to_there;
     //loop through all states
    for(int i=0; i<row; ++i)
    {
        for(int j=0; j<col; ++j)
        {
            //validate if posistion is on board
-           if();
-
+           therex = xpos + to_check.shape[i][j].x;
+           therey = ypos + to_check.shape[i][j].y;
+           if( therex >=0 && therex < ROW && 
+               therey >=0 && therey < COL -1)
+           {
+              //attack for Pawn 
+              if(j != 0 && Opponent(to_check.type, board[therex][therey]))
+                {
+                    to_there.Set_Point(therex,therey);
+                    peicev = Peice_Value(board[therex][therey]);
+                    list[list_index].S_Move(to_there,from_here, peicev);
+                    ++list_index;
+                }//possible Pawn move
+                else if(board[therex][therey] == '.')
+                {
+                    to_there.Set_Point(therex,therey);
+                    peicev = Peice_Value(board[therex][therey]);
+                    list[list_index].S_Move(to_there,from_here, peicev);
+                    ++list_index;
+                }
+           }
        }
    }
 }
 
 void Player::Move_B_Pawn(int& xpos, int& ypos,Peice & to_check)
-{}
+{
+    //grab values for dimentions of piece "positions"
+    int row = to_check.dim.x , col = to_check.dim.y, 
+        therex=0, therey=0, peicev=0;
+    //values for setting moves
+    Point from_here;
+    from_here.Set_Point(xpos,ypos);
+    Point to_there;
+    //loop through all states
+   for(int i=0; i<row; ++i)
+   {
+       for(int j=0; j<col; ++j)
+       {
+           //validate if posistion is on board
+           therex = xpos + to_check.shape[i][j].x;
+           therey = ypos + to_check.shape[i][j].y;
+           if( therex >=0 && therex < ROW && 
+               therey >=0 && therey < COL -1)
+           {
+              //attack for Pawn 
+              if(j != 0 && Opponent(to_check.type, board[therex][therey]))
+                {
+                    to_there.Set_Point(therex,therey);
+                    peicev = Peice_Value(board[therex][therey]);
+                    list[list_index].S_Move(to_there,from_here, peicev);
+                    ++list_index;
+                }//possible Pawn move
+                else if(board[therex][therey] == '.')
+                {
+                    to_there.Set_Point(therex,therey);
+                    peicev = Peice_Value(board[therex][therey]);
+                    list[list_index].S_Move(to_there,from_here, peicev);
+                    ++list_index;
+                }
+           }
+       }
+   }
+}
+
 void Player::Move_Knight(int& xpos, int& ypos,Peice & to_check)
-{}
+{
+    //grab values for dimentions of piece "positions"
+    int row = to_check.dim.x , col = to_check.dim.y, 
+        therex=0, therey=0, peicev=0;
+    //values for setting moves
+    Point from_here;
+    from_here.Set_Point(xpos,ypos);
+    Point to_there;
+    //loop through all states
+   for(int i=0; i<row; ++i)
+   {
+       for(int j=0; j<col; ++j)
+       {
+           //validate if posistion is on board
+           therex = xpos + to_check.shape[i][j].x;
+           therey = ypos + to_check.shape[i][j].y;
+           if( therex >=0 && therex < ROW && 
+               therey >=0 && therey < COL -1)
+           {
+              //attack or move for Knight 
+              if( board[therex][therey] == '.' || Opponent(to_check.type, board[therex][therey]))
+                {
+                    to_there.Set_Point(therex,therey);
+                    peicev = Peice_Value(board[therex][therey]);
+                    list[list_index].S_Move(to_there,from_here, peicev);
+                    ++list_index;
+                }
+           }
+       }
+   }
+}
+
 void Player::Move_Bishop(int& xpos, int& ypos,Peice & to_check)
-{}
+{
+    //grab values for dimentions of piece "positions"
+    int row = to_check.dim.x , col = to_check.dim.y, 
+        therex=0, therey=0, peicev=0;
+    //values for setting moves
+    Point from_here;
+    from_here.Set_Point(xpos,ypos);
+    Point to_there;
+    //loop through all states
+   for(int i=0; i<row; ++i)
+   {
+       for(int j=0; j<col; ++j)
+       {
+           //validate if posistion is on board
+           therex = xpos + to_check.shape[i][j].x;
+           therey = ypos + to_check.shape[i][j].y;
+           if( therex >=0 && therex < ROW && 
+               therey >=0 && therey < COL -1)
+           {
+               //**special** Bishop moves
+               if(i == 0 && board[therex][therey] == '.')
+               {
+                    to_there.Set_Point(therex,therey);
+                    peicev = Peice_Value(board[therex][therey]);
+                    list[list_index].S_Move(to_there,from_here, peicev);
+                    ++list_index;
+
+               }//move for Bishop 
+               else if( board[therex][therey] == '.' )//|| Opponent(to_check.type, board[therex][therey]))
+                {
+                    to_there.Set_Point(therex,therey);
+                    peicev = Peice_Value(board[therex][therey]);
+                    list[list_index].S_Move(to_there,from_here, peicev);
+                    ++list_index;
+                }//attack for Bishop
+               else if(Opponent(to_check.type, board[therex][therey]))
+               {
+                    to_there.Set_Point(therex,therey);
+                    peicev = Peice_Value(board[therex][therey]);
+                    list[list_index].S_Move(to_there,from_here, peicev);
+                    ++list_index;
+                    break;//peice in way for the rest of the path
+               }//teammate peice: stop searching path
+               else break;
+                
+
+
+           }
+       }
+   }   
+}
 void Player::Move_Queen(int& xpos, int& ypos,Peice & to_check)
 {}
 void Player::Move_King(int& xpos, int& ypos,Peice & to_check)
@@ -238,10 +414,12 @@ void Player::Move_Rook(int& xpos, int& ypos,Peice & to_check)
 {}
 
 
-Move::Move(): to{0,0}, from{0,0}, value{0}/*, next{NULL}*/ {}
+Move::Move(): value{0} /*, next{NULL}*/ {}
 
-void Move::S_Move(Point& go_to, Point& come_from, int& value)
+void Move::S_Move(Point& go_to, Point& come_from, int& points)
 {
-
+    value = points;
+    to.Set_Point(go_to.x, go_to.y);
+    from.Set_Point(come_from.x, come_from.y);
 }
 
