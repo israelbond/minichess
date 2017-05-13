@@ -15,6 +15,7 @@ class Point
     Point(int,int);
     ~Point();
     void Set_Point(int, int);
+    void Display_P();
 
 //    protected:
         int x;

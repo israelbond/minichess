@@ -10,6 +10,10 @@ void Point::Set_Point(int nx, int ny)
     this->y = ny;
 }
 
+void Point::Display_P()
+{
+    cout<<'\t'<< x <<"-"<< y; 
+}
 
 Peice::Peice(): type{'\0'}, score{0}
 {
@@ -30,6 +34,7 @@ Peice::~Peice()
         shape = NULL;
     }
 }
+
 
 void Peice::S_B_Pawn()
 {

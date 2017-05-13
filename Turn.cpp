@@ -165,7 +165,7 @@ void Turn::Romove_Board(char**& board)
     }
 }
 
-Move* Player::Generate_Moves()
+void Player::Generate_Moves()
 {
     if(player)//WHITE
     {
@@ -195,8 +195,8 @@ Move* Player::Generate_Moves()
     list_max = list_index; // sets move list max limit.
     list_index = 0;//reset move list counter
 
-    return NULL;
 }
+//function to invoke proper peice to generate moves from
 void Player::White_Moves(int& x, int& y, char& piece)
 {   
     switch(piece)
@@ -407,14 +407,151 @@ void Player::Move_Bishop(int& xpos, int& ypos,Peice & to_check)
    }   
 }
 void Player::Move_Queen(int& xpos, int& ypos,Peice & to_check)
-{}
+{
+    //grab values for dimentions of piece "positions"
+    int row = to_check.dim.x , col = to_check.dim.y, 
+        therex=0, therey=0, peicev=0;
+    //values for setting moves
+    Point from_here;
+    from_here.Set_Point(xpos,ypos);
+    Point to_there;
+    //loop through all states
+   for(int i=0; i<row; ++i)
+   {
+       for(int j=0; j<col; ++j)
+       {
+           //validate if posistion is on board
+           therex = xpos + to_check.shape[i][j].x;
+           therey = ypos + to_check.shape[i][j].y;
+           if( therex >=0 && therex < ROW && 
+               therey >=0 && therey < COL -1)
+           {
+                  //valid move
+                   if(board[therex][therey] == '.')
+                   {
+                    to_there.Set_Point(therex,therey);
+                    peicev = Peice_Value(board[therex][therey]);
+                    list[list_index].S_Move(to_there,from_here, peicev);
+                    ++list_index;
+                   }//attack on Opponent
+                   else if(Opponent(to_check.type, board[therex][therey]))
+                   {
+                    to_there.Set_Point(therex,therey);
+                    peicev = Peice_Value(board[therex][therey]);
+                    list[list_index].S_Move(to_there,from_here, peicev);
+                    ++list_index;
+                    break;
+                   }//teammate peice: dont check any further down this path
+                   else break;
+           }//path runs off board
+           else break;
+       }
+   }   
+}
 void Player::Move_King(int& xpos, int& ypos,Peice & to_check)
-{}
-void Player::Move_Rook(int& xpos, int& ypos,Peice & to_check)
-{}
+{
+    //grab values for dimentions of piece "positions"
+    int row = to_check.dim.x , col = to_check.dim.y, 
+        therex=0, therey=0, peicev=0;
+    //values for setting moves
+    Point from_here;
+    from_here.Set_Point(xpos,ypos);
+    Point to_there;
+    //loop through all states
+   for(int i=0; i<row; ++i)
+   {
+       for(int j=0; j<col; ++j)
+       {
+           //validate if posistion is on board
+           therex = xpos + to_check.shape[i][j].x;
+           therey = ypos + to_check.shape[i][j].y;
+           if( therex >=0 && therex < ROW && 
+               therey >=0 && therey < COL -1)
+           {
+                  //valid move
+                   if(board[therex][therey] == '.')
+                   {
+                    to_there.Set_Point(therex,therey);
+                    peicev = Peice_Value(board[therex][therey]);
+                    list[list_index].S_Move(to_there,from_here, peicev);
+                    ++list_index;
+                   }//attack on Opponent
+                   else if(Opponent(to_check.type, board[therex][therey]))
+                   {
+                    to_there.Set_Point(therex,therey);
+                    peicev = 1000;//MUST TAKE PEICE!!!  --Peice_Value(board[therex][therey]);
+                    list[list_index].S_Move(to_there,from_here, peicev);
+                    ++list_index;
+                    break;
+                   }//teammate peice: dont check any further down this path
+                   else break;
+           }
+       }
+   }
+}
 
+void Player::Move_Rook(int& xpos, int& ypos,Peice & to_check)
+{ 
+    //grab values for dimentions of piece "positions"
+    int row = to_check.dim.x , col = to_check.dim.y, 
+        therex=0, therey=0, peicev=0;
+    //values for setting moves
+    Point from_here;
+    from_here.Set_Point(xpos,ypos);
+    Point to_there;
+    //loop through all states
+   for(int i=0; i<row; ++i)
+   {
+       for(int j=0; j<col; ++j)
+       {
+           //validate if posistion is on board
+           therex = xpos + to_check.shape[i][j].x;
+           therey = ypos + to_check.shape[i][j].y;
+           if( therex >=0 && therex < ROW && 
+               therey >=0 && therey < COL -1)
+           {
+                  //valid move
+                   if(board[therex][therey] == '.')
+                   {
+                    to_there.Set_Point(therex,therey);
+                    peicev = Peice_Value(board[therex][therey]);
+                    list[list_index].S_Move(to_there,from_here, peicev);
+                    ++list_index;
+                   }//attack on Opponent
+                   else if(Opponent(to_check.type, board[therex][therey]))
+                   {
+                    to_there.Set_Point(therex,therey);
+                    peicev = Peice_Value(board[therex][therey]);
+                    list[list_index].S_Move(to_there,from_here, peicev);
+                    ++list_index;
+                    break;
+                   }//teammate peice: dont check any further down this path
+                   else break;
+           }//path runs off board
+           else break;
+       }
+   }
+}
+
+void Player::Display_Moves(void)
+{
+    for(int i=0; i < list_max; ++i)
+    {
+        cout<<"MOVE "<<i<<'\t';
+        list[i].Display_M();
+    }
+}
 
 Move::Move(): value{0} /*, next{NULL}*/ {}
+
+void Move::Display_M()
+{
+    cout<<"\tto: ";
+    to.Display_P();
+    cout<<"\tfrom: ";
+    from.Display_P();
+    cout<<endl;
+}
 
 void Move::S_Move(Point& go_to, Point& come_from, int& points)
 {

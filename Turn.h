@@ -19,6 +19,7 @@ class Move// : public Turn
         Move();
         void S_Move(Point&,Point&,int&);
         void Insert();
+        void Display_M();
 //    protected:
         int value;
         Point to;
@@ -58,8 +59,8 @@ class Turn
 
 class Player : public Turn
 {
-
-    Move* Generate_Moves(void);
+    public:
+    void Generate_Moves(void);
     void White_Moves(int&,int&,char&);
     void Black_Moves(int&,int&,char&);
     void Move_W_Pawn(int&,int&,Peice&);
@@ -69,5 +70,6 @@ class Player : public Turn
     void Move_Queen(int&,int&,Peice&);
     void Move_King(int&,int&,Peice&);
     void Move_Rook(int&,int&,Peice&);
+    void Display_Moves(void);
 };
 
