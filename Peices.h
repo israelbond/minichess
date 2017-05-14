@@ -36,7 +36,7 @@ class Peice
         void S_Bishop();
 
 //    protected:
-        char type;
+//        char type;
         int score;
         Point dim;
         Point ** shape;

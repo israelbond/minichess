@@ -12,12 +12,12 @@ void Point::Set_Point(int nx, int ny)
 
 void Point::Display_P()
 {
-    cout<<'\t'<< x <<"-"<< y; 
+    cout<< (char)(y +'a')<< 6-x; 
 }
 
-Peice::Peice(): type{'\0'}, score{0}
+Peice::Peice():/* type{'\0'},*/ score{0}
 {
-    int n =0;
+    int n =0;//used to set peice 2d array dimensions
     shape = NULL;
     dim.Set_Point(n,n);
 }
@@ -39,7 +39,7 @@ Peice::~Peice()
 void Peice::S_B_Pawn()
 {
 
-    type = 'p';
+//    type = 'p';
     dim.Set_Point(1,3);
     score = 1;
     shape = new Point*[dim.x];
@@ -53,7 +53,7 @@ void Peice::S_B_Pawn()
 
  void Peice::S_W_Pawn()
 {
-    type = 'P';
+//    type = 'P';
     dim.Set_Point(1,3);
     score = 1;
      shape = new Point*[dim.x];
@@ -67,7 +67,7 @@ void Peice::S_B_Pawn()
 
 void Peice::S_King()
 {
-    type = 'k';
+//    type = 'k';
     dim.Set_Point(2,4);
     score = 50;
       shape = new Point*[dim.x];
@@ -83,7 +83,7 @@ void Peice::S_King()
 
 void Peice::S_Queen()
 {
-    type = 'q';
+//    type = 'q';
     dim.Set_Point(8,5);
     score = 9;
        shape = new Point*[dim.x];
@@ -129,7 +129,7 @@ void Peice::S_Queen()
 
 void Peice::S_Rook()
 {
-    type = 'r';
+//    type = 'r';
     dim.Set_Point(4,5);
     score = 5;
     shape = new Point*[dim.x];
@@ -158,7 +158,7 @@ void Peice::S_Rook()
 
 void Peice::S_Knight()
 {
-    type = 'n';
+ //   type = 'n';
     dim.Set_Point(2,4);
     score = 3;
      shape = new Point*[dim.x];
@@ -174,7 +174,7 @@ void Peice::S_Knight()
 
 void Peice::S_Bishop()
 {
-    type = 'b';
+//    type = 'b';
     dim.Set_Point(5,4);
     score = 3;
       shape = new Point*[dim.x];

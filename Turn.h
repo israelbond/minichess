@@ -17,11 +17,12 @@ class Move// : public Turn
 {
     public:
         Move();
-        void S_Move(Point&,Point&,int&);
+        void S_Move(Point&,Point&,int&,char&);
         void Insert();
         void Display_M();
 //    protected:
         int value;
+        char type;
         Point to;
         Point from;
 //        Move * next;
@@ -50,11 +51,12 @@ class Turn
         char board[ROW][COL];
         int player;
         int turn_count; 
-        int list_index;
-        int list_max;
+//        int list_index;
+//        int list_max;
         Move piece;
         Peice pieces[MAX_P];
-        Move list[MOVES];
+        Move * list;//list[MOVES];
+        int * check;
 };
 
 class Player : public Turn
