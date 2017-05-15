@@ -1,10 +1,10 @@
-#include "Turn.h"
+#include "Player.h"
 
 int main()
 {
-    Player game;
- //   game.Display_Turn();
-    game.Generate_Moves();
-//    game.Display_Moves();
+    Novice game;
+    game.Go();
+//    game.Generate_Moves();
+        
     return 0;
 }

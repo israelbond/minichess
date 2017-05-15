@@ -1,16 +1,45 @@
 
 #include "Turn.h"
 
-Turn::Turn(): list_index(0), list_max(0), check{NULL}
+Move::Move(): value{0}, type{'x'} /*, next{NULL}*/ {}
+
+void Move::Display_M()
 {
-    Starting_State();
+    cout<<"\tPoints: "<<value<<"\tType: "<<type;
+    cout<<"\tfrom-to: ";
+    from.Display_P();
+    cout<<"-";
+    to.Display_P();
+    cout<<endl;
+}
+
+
+void Move::S_Move(Point& go_to, Point& come_from, int& points, char & peice)
+{
+    type = peice;
+    value = points;
+    to.Set_Point(go_to.x, go_to.y);
+    from.Set_Point(come_from.x, come_from.y);
+}
+
+Turn::Turn(): board{NULL}, check{NULL}
+{
+    //    Starting_State();
     Set_Piece_List();
-    //       Set_Turn();
+    Set_Turn();
 }
 
 Turn::~Turn()
 {
-    //ALL VARIABLE MEMORY IS STATIC 
+    if(board)
+    {
+        for(int i =0; i<ROW; ++i)
+        {
+            delete [] board[i];
+        }
+        delete [] board;
+        board = NULL;
+    }
 }
 
 //function uses standard in to fill class variables
@@ -21,14 +50,21 @@ void Turn::Set_Turn()
     fscanf(stdin, "%d", &turn_count);
     fscanf(stdin, "%s", &playing);
     Set_Player();
-
+    board = new char*[ROW];
+    for(int j=0;j<ROW;++j) 
+        board[j] = new char[COL];
     for(int i=0; i < ROW; ++i)
-    {
         fscanf(stdin,"%s", board[i]);
-    }
-    //    Set_Player();
+    
 }
 
+void Turn::Set_Move(Move & to_add, Move& to_get)
+{
+    to_add.value = to_get.value;
+    to_add.type = to_get.type;
+    to_add.from.Set_Point(to_get.from.x,to_get.from.y);
+    to_add.to.Set_Point(to_get.to.x,to_get.to.y);
+}
 //sets variable to varify which side is playing
 void Turn::Set_Player()
 {
@@ -82,26 +118,32 @@ void Turn::Display_Turn()
     for(int i = 0; i<ROW; ++i)
         fprintf(stdout,"%s\n",board[i]);
 }
-  //FUNCTION: FOO NEGAMAX...
-    char** Turn::Moved(Move to_move)
-    {
-        char** temp = NULL;
-//belongs to the side on move,//XXX could cause issuses when
-//                                      eveluating '.'
-if(((isupper(board[to_move.from.x][to_move.from.y])|| board[to_move.from.x][to_move.from.y]=='.') && player)
-||(!player && !isupper(board[to_move.from.x][to_move.from.y])))
+//creats copy of class board and places move on new board
+char** Turn::Moved(char**& hold,Move to_move)
 {
-//return copy of the board containing the move to be returned
-temp = Copy_Board();
-//move piece
-Make_Move(temp,to_move);
-//return new board 
-return temp;
-}            
-//otherwise throw exception
-return NULL;
+    char** temp = NULL;
+    //belongs to the side on move,//XXX could cause issuses when
+    //                                      eveluating '.'
+    if(((isupper(hold[to_move.from.x][to_move.from.y])|| hold[to_move.from.x][to_move.from.y]=='.') && player)
+            ||(!player && !isupper(hold[to_move.from.x][to_move.from.y])))
+    {
+        //return copy of the board containing the move to be returned
+        temp = Copy_Board(hold);
+        //move piece
+        Make_Move(temp,to_move);
+        //return new board 
+        return temp;
+    }            
+    //otherwise throw exception
+    return NULL;
 
 
+}
+
+void Turn::Make_Move(char** nBoard, Move & to_move)
+{
+    nBoard[to_move.to.x][to_move.to.y] = nBoard[to_move.from.x][to_move.from.y];
+    nBoard[to_move.from.x][to_move.from.y] = '.';
 }
 
 
@@ -138,17 +180,11 @@ bool Turn::Opponent(char& me, char& them)
     if(them != '.')
     {
         if((isupper(me)) != (isupper(them))) return true;
-        /*    else if(isupper(me) == isupper(them))
-              {
-              cout<<"SAME TEAM!!"; 
-              return false;
-              }
-              */
     }
     return false;
 }
 
-char** Turn::Copy_Board()
+char** Turn::Copy_Board(char**& the_board)
 {
     int i=0;
     char** temp = NULL;
@@ -157,11 +193,11 @@ char** Turn::Copy_Board()
         temp[i] = new char [COL];
     i=0;
     for(;i<ROW; ++i)
-        strcpy(temp[i],board[i]);
+        strcpy(temp[i],the_board[i]);
     return temp;
 }
 
-void Turn::Romove_Board(char**& board)
+void Turn::Remove_Board(char**& board)
 {
     if(board)
     {
@@ -171,15 +207,92 @@ void Turn::Romove_Board(char**& board)
         board = NULL;
     }
 }
+
+void Turn::Change_Player()
+{
+    if(player)
+    {
+        playing = 'B';
+        player = 0;
+    }
+    else
+    {
+        playing = 'W';
+        player = 1;
+    }
+}
+
+bool Turn::Game_Over(char ** & the_board)
+{
+    if(player)
+    {
+        for(int i=0; i<ROW;++i)
+        {
+            for(int j=0; j< COL-1; ++j)
+            {
+                if(the_board[i][j] !='K')
+                {
+                    return false;
+                }
+            }
+        }
+    }
+    else
+    {
+         for(int i=0; i<ROW;++i)
+        {
+            for(int j=0; j< COL-1; ++j)
+            {
+                if(the_board[i][j] !='k')
+                {
+                    return false;
+                }
+            }
+        }   
+    }
+    return true;
+}
+int Turn::Board_Eval(char**& the_board)
+{
+    int w=0,b=0;
+    for(int i=0; i<ROW;++i)
+    {
+        for(int j=0; j< COL-1; ++j)
+        {
+            cout<< i << j <<endl;
+            if(the_board[i][j] == '.') continue;
+            else
+            {
+                if(isupper(the_board[i][j])) w += Peice_Value(the_board[i][j]);
+                else                     b += Peice_Value(the_board[i][j]);
+            }
+        }
+    }
+    if(player)//whites on turn
+        return w - b;
+    else
+        return b - w;
+}
+
+void Player::Display_Board(char**& the_board)
+{
+    for(int i=0; i<ROW; ++i)
+        cout<<the_board[i]<<endl;
+    cout<<'\n';
+}
+
 void Player::Run()
 {
     int list_index=0, list_max=0;
-    list = Generate_Moves();
-    
-
+    list = Generate_Moves(list_index,list_max);
+//    char** temp = Copy_Board();
+//    cout<<Board_Eval(temp);
+    //    Display_Moves(list,list_max);   PRIORITY LIST!!!
 }
-Move * Player::Generate_Moves()
+
+Move * Player::Generate_Moves(int& list_index, int& list_max)
 {
+
     Move * temp = new Move[MOVES];
     Move * ret_list = NULL;
     if(player)//WHITE
@@ -193,11 +306,14 @@ Move * Player::Generate_Moves()
             }
         }
         //sort list
-//        int used[list_max];//Move index varification
         list_max = list_index;
         list_index = 0;
         ret_list = new Move[list_max];
         Sort_Moves(temp,ret_list,list_index,list_max);
+        delete [] ret_list;
+        ret_list = new Move[list_max];
+        Copy_Moves(temp,list_index,list_max,ret_list);
+        delete [] temp;
     }
     else//BLACK
     {
@@ -206,77 +322,118 @@ Move * Player::Generate_Moves()
             for(int j = 0; j<COL-1; ++j)
             { 
                 if(!isupper(board[i][j]) && board[i][j] != '.')// is a black piece
-                    Black_Moves(move_list,i,j,board[i][j]);
-                    
+                    Black_Moves(temp,list_index,i,j,board[i][j]);
+
             }
-        }  
+        }
+        list_max = list_index;
+        list_index = 0;
+        ret_list = new Move[list_max];
+        Sort_Moves(temp,ret_list,list_index,list_max);
+        delete [] ret_list;
+        ret_list = new Move[list_max];
+        Copy_Moves(temp,list_index,list_max,ret_list);
+        delete [] temp;
+
     }
+    return ret_list;
 }
 
 Move* Player::Sort_Moves(Move old_list[], Move new_list[],int& list_index,int& list_max)
 {
     Copy_Moves(old_list, list_index, list_max, new_list);
-    //splitmerge
-
-    
+    //splitmerge algorithm
+    Split_Merge(new_list,list_index,list_max,old_list);
+    return NULL;    
 }
 
+void Player::Split_Merge(Move new_list[],int& index,int& max, Move old_list[])
+{
+    if(max - index <2 ) return;
+    int mid = (max+index) / 2;
+    Split_Merge(old_list,index,mid,new_list);
+    Split_Merge(old_list,mid,max,new_list);
+    Merge_Top_Down(new_list,index,mid,max,old_list);
+}
+
+void Player::Merge_Top_Down(Move old_list[],int& index,int& mid,int& max,Move new_list[])
+{
+    int i = index, j = mid;
+    for(int k=index; k<max;++k)
+    {
+        if(old_list[i].type != 'x' || old_list[j].type != 'x')
+        {
+            if(i<mid && (j>=max || old_list[i].value >= old_list[j].value))
+            {
+                Set_Move(new_list[k],old_list[i]);
+                ++i;
+            }
+            else
+            {
+                Set_Move(new_list[k],old_list[j]);
+                ++j;
+            }
+        }
+    }
+}
+
+
 //copy moves: invokes Set_Move
-void Player::Copy_Moves(Move old_list[],Move new_list[],int& list_index, int& list_max)
+void Player::Copy_Moves(Move old_list[],int& list_index, int& list_max, Move new_list[])
 {
     for(int i = list_index; i<list_max; ++i)
     {
-        Move Set_Move(old_list[i],new_list[i]);
+        Set_Move(new_list[i],old_list[i]);
     }
 }
 //function to invoke proper peice to generate moves from
-void Player::White_Moves(int& x, int& y, char& peice)
+void Player::White_Moves(Move*& list,int& list_index,int& x, int& y, char& peice)
 {  
     char temp = peice;
     switch(temp)
     {
         case '.': break;
-        case 'P': Move_W_Pawn(x,y,pieces[0]);
+        case 'P': Move_W_Pawn(list,list_index,x,y,pieces[0]);
                   break;
-        case 'N': Move_Knight(x,y,pieces[2]);
+        case 'N': Move_Knight(list,list_index,x,y,pieces[2]);
                   break;
-        case 'B': Move_Bishop(x,y,pieces[3]);
+        case 'B': Move_Bishop(list,list_index,x,y,pieces[3]);
                   break;
-        case 'Q': Move_Queen(x,y,pieces[5]);
+        case 'Q': Move_Queen(list,list_index,x,y,pieces[5]);
                   break;
-        case 'K': Move_King(x,y,pieces[4]);
+        case 'K': Move_King(list,list_index,x,y,pieces[4]);
                   break;
-        case 'R': Move_Rook(x,y,pieces[6]);
+        case 'R': Move_Rook(list,list_index,x,y,pieces[6]);
                   break;
         default:
                   cout<<"\nUNRECONGNIZED WHITE CHARACTER"<<endl;
     }
 }
 
-void Player::Black_Moves(int& x, int& y, char& peice)
+void Player::Black_Moves(Move*& list,int& list_index,int& x, int& y, char& peice)
 {  
     char temp = peice;
     switch(temp)
     {
         case '.': break;
-        case 'p': Move_B_Pawn(x,y,pieces[1]);
+        case 'p': Move_B_Pawn(list,list_index,x,y,pieces[1]);
                   break;
-        case 'n': Move_Knight(x,y,pieces[2]);
+        case 'n': Move_Knight(list,list_index,x,y,pieces[2]);
                   break;
-        case 'b': Move_Bishop(x,y,pieces[3]);
+        case 'b': Move_Bishop(list,list_index,x,y,pieces[3]);
                   break;
-        case 'q': Move_Queen(x,y,pieces[5]);
+        case 'q': Move_Queen(list,list_index,x,y,pieces[5]);
                   break;
-        case 'k': Move_King(x,y,pieces[4]);
+        case 'k': Move_King(list,list_index,x,y,pieces[4]);
                   break;
-        case 'r': Move_Rook(x,y,pieces[6]);
+        case 'r': Move_Rook(list,list_index,x,y,pieces[6]);
                   break;
         default:
                   cout<<"\nUNRECONGNIZED BLACK CHARACTER"<<endl;
     }
 }
 
-void Player::Move_W_Pawn(int& xpos, int& ypos,Peice & to_check)
+void Player::Move_W_Pawn(Move*& list,int& list_index,int& xpos, int& ypos,Peice & to_check)
 {
     //grab values for dimentions of piece "positions"
     int row = to_check.dim.x , col = to_check.dim.y, 
@@ -316,7 +473,7 @@ void Player::Move_W_Pawn(int& xpos, int& ypos,Peice & to_check)
     }
 }
 
-void Player::Move_B_Pawn(int& xpos, int& ypos,Peice & to_check)
+void Player::Move_B_Pawn(Move*& list,int& list_index,int& xpos, int& ypos,Peice & to_check)
 {
     //grab values for dimentions of piece "positions"
     int row = to_check.dim.x , col = to_check.dim.y, 
@@ -356,7 +513,7 @@ void Player::Move_B_Pawn(int& xpos, int& ypos,Peice & to_check)
     }
 }
 
-void Player::Move_Knight(int& xpos, int& ypos,Peice & to_check)
+void Player::Move_Knight(Move*& list,int& list_index,int& xpos, int& ypos,Peice & to_check)
 {
     //grab values for dimentions of piece "positions"
     int row = to_check.dim.x , col = to_check.dim.y, 
@@ -389,7 +546,7 @@ void Player::Move_Knight(int& xpos, int& ypos,Peice & to_check)
     }
 }
 
-void Player::Move_Bishop(int& xpos, int& ypos,Peice & to_check)
+void Player::Move_Bishop(Move*& list,int& list_index,int& xpos, int& ypos,Peice & to_check)
 {
     //grab values for dimentions of piece "positions"
     int row = to_check.dim.x , col = to_check.dim.y, 
@@ -441,7 +598,7 @@ void Player::Move_Bishop(int& xpos, int& ypos,Peice & to_check)
         }
     }   
 }
-void Player::Move_Queen(int& xpos, int& ypos,Peice & to_check)
+void Player::Move_Queen(Move*& list,int& list_index,int& xpos, int& ypos,Peice & to_check)
 {
     //grab values for dimentions of piece "positions"
     int row = to_check.dim.x , col = to_check.dim.y, 
@@ -483,7 +640,7 @@ void Player::Move_Queen(int& xpos, int& ypos,Peice & to_check)
         }
     }   
 }
-void Player::Move_King(int& xpos, int& ypos,Peice & to_check)
+void Player::Move_King(Move*& list,int& list_index,int& xpos, int& ypos,Peice & to_check)
 {
     //grab values for dimentions of piece "positions"
     int row = to_check.dim.x , col = to_check.dim.y, 
@@ -525,7 +682,7 @@ void Player::Move_King(int& xpos, int& ypos,Peice & to_check)
     }
 }
 
-void Player::Move_Rook(int& xpos, int& ypos,Peice & to_check)
+void Player::Move_Rook(Move*& list,int& list_index,int& xpos, int& ypos,Peice & to_check)
 { 
     //grab values for dimentions of piece "positions"
     int row = to_check.dim.x , col = to_check.dim.y, 
@@ -568,7 +725,7 @@ void Player::Move_Rook(int& xpos, int& ypos,Peice & to_check)
     }
 }
 
-void Player::Display_Moves(void)
+void Player::Display_Moves(Move*& list, int& list_max)
 {
     for(int i=0; i < list_max; ++i)
     {
@@ -577,30 +734,4 @@ void Player::Display_Moves(void)
     }
 }
 
-Move::Move(): value{0}, type{'x'} /*, next{NULL}*/ {}
-
-void Move::Display_M()
-{
-    cout<<"\tPoints: "<<value<<"\tType: "<<type;
-    cout<<"\tfrom-to: ";
-    from.Display_P();
-    cout<<"-";
-    to.Display_P();
-    cout<<endl;
-}
-
-void Move::Set_Move(Move & to_add, Move& to_get)
-{
-    to_add.value = to_get.value;
-    to_add.type = to_get.type;
-    to_add.from.Set_Point(to_get.from.x,to_get.from.y);
-    to_add.to.Set_Point(to_get.to.x,to_get.to.y);
-}
-void Move::S_Move(Point& go_to, Point& come_from, int& points, char & peice)
-{
-    type = peice;
-    value = points;
-    to.Set_Point(go_to.x, go_to.y);
-    from.Set_Point(come_from.x, come_from.y);
-}
 
