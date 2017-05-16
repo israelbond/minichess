@@ -41,17 +41,20 @@ class Turn
 
         int Board_Eval(char**&);
         bool Game_Over(char**&);
-        void Make_Move(char**, Move&);
+        void Make_Move(char**&, Move&);
         void Display_Turn(void);
         void Change_Player(void);
         void Set_Piece_List(void);
         int Peice_Value(char&);
         bool Opponent(char&,char&);
-        char** Moved(char**&,Move);
+//        void Moved(char**&,Move);
+        void Unmove(char**&,Move&);
         char** Copy_Board(char**&);
         void Remove_Board(char**&);
         void Change_player(void);
-                
+        void Display_Vars();                
+        void Display_Board(char**&);
+        void Remove_List(Move*&);
         
 //    protected:
 
@@ -59,12 +62,10 @@ class Turn
         char** board;
         int player;
         int turn_count; 
-//        int list_index;
-//        int list_max;
-        Move piece;
+//        Move piece;
         Peice pieces[MAX_P];
         Move * list;//list[MOVES];
-        int * check;
+//        int * check;
 };
 
 class Player : public Turn
@@ -72,7 +73,7 @@ class Player : public Turn
     public:
 
     void Run(void);
-    Move* Generate_Moves(int&,int&);
+    Move* Generate_Moves(char**&,int&,int&);
     Move* Sort_Moves(Move[],Move[],int&,int&);
     void Copy_Moves(Move[],int&,int&,Move[]);
     void Merge_Top_Down(Move[],int&,int&,int&,Move[]);
@@ -87,6 +88,5 @@ class Player : public Turn
     void Move_King(Move*&,int&,int&,int&,Peice&);
     void Move_Rook(Move*&,int&,int&,int&,Peice&);
     void Display_Moves(Move*&,int&);
-    void Display_Board(char**&);
 };
 

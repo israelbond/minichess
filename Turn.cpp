@@ -3,14 +3,18 @@
 
 Move::Move(): value{0}, type{'x'} /*, next{NULL}*/ {}
 
+
+//calls functions to display move: CHANGE TO STDOUT!!!
 void Move::Display_M()
 {
-    cout<<"\tPoints: "<<value<<"\tType: "<<type;
-    cout<<"\tfrom-to: ";
+//   cout<<"\tPoints: "<<value<<"\tType: "<<type;
+//    cout<<"\tfrom-to: ";
+    char h = '-';
     from.Display_P();
-    cout<<"-";
+    fprintf(stdout,"%s", &h);
+//    cout<<"-";
     to.Display_P();
-    cout<<endl;
+//    cout<<endl;
 }
 
 
@@ -22,7 +26,7 @@ void Move::S_Move(Point& go_to, Point& come_from, int& points, char & peice)
     from.Set_Point(come_from.x, come_from.y);
 }
 
-Turn::Turn(): board{NULL}, check{NULL}
+Turn::Turn(): board{NULL}, list{NULL}//, check{NULL}
 {
     //    Starting_State();
     Set_Piece_List();
@@ -31,7 +35,7 @@ Turn::Turn(): board{NULL}, check{NULL}
 
 Turn::~Turn()
 {
-    if(board)
+    if(board != NULL)
     {
         for(int i =0; i<ROW; ++i)
         {
@@ -40,6 +44,9 @@ Turn::~Turn()
         delete [] board;
         board = NULL;
     }
+
+    if(list != NULL)
+        delete [] list;
 }
 
 //function uses standard in to fill class variables
@@ -78,7 +85,7 @@ void Turn::Set_Player()
 //and White player on first turn.
 void Turn::Starting_State()
 {
-    int i=0,j=0;
+    int i=0;
     playing = 'W';
     turn_count = 1;
 
@@ -88,13 +95,12 @@ void Turn::Starting_State()
         {'.','.','.','.','.','\0'},
         {'P','P','P','P','P','\0'},
         {'R','N','B','Q','K','\0'}};
+     board = new char*[ROW];
+    for(int j=0;j<ROW;++j) 
+        board[j] = new char[COL];
     for(;i<ROW;++i)
     {
-        for(;j<COL;++j)
-        {
-            board[i][j] = temp[i][j];
-        }
-        j=0;
+        strcpy(board[i],temp[i]);
     }
 }
 
@@ -118,32 +124,38 @@ void Turn::Display_Turn()
     for(int i = 0; i<ROW; ++i)
         fprintf(stdout,"%s\n",board[i]);
 }
-//creats copy of class board and places move on new board
-char** Turn::Moved(char**& hold,Move to_move)
+
+void Turn::Display_Vars()
 {
-    char** temp = NULL;
-    //belongs to the side on move,//XXX could cause issuses when
-    //                                      eveluating '.'
-    if(((isupper(hold[to_move.from.x][to_move.from.y])|| hold[to_move.from.x][to_move.from.y]=='.') && player)
-            ||(!player && !isupper(hold[to_move.from.x][to_move.from.y])))
-    {
-        //return copy of the board containing the move to be returned
-        temp = Copy_Board(hold);
-        //move piece
-        Make_Move(temp,to_move);
-        //return new board 
-        return temp;
-    }            
-    //otherwise throw exception
-    return NULL;
-
-
+        cout<<"Player  "<<playing<<endl;
+        cout<<"P_val   "<<player<<endl;
+        cout<<"P_turns "<<turn_count<<endl;
+        Display_Board(board);
+//        Move piece;
+//        Peice pieces[MAX_P];
+//        Display_Moves(list);//list[MOVES];
+}
+ 
+//creats copy of class board and places move on new board
+/*char** Turn::Moved(char**& hold,Move to_move)
+{
+//        Make_Move(hold,to_move);
+        return hold;
+}
+*/
+void Turn::Unmove(char**& hold, Move& to_move)
+{   
+    hold[to_move.from.x][to_move.from.y] = hold[to_move.to.x][to_move.to.y];
+    hold[to_move.to.x][to_move.to.y] = to_move.type;
+//    return hold;
 }
 
-void Turn::Make_Move(char** nBoard, Move & to_move)
+
+void Turn::Make_Move(char**& nBoard, Move& to_move)
 {
     nBoard[to_move.to.x][to_move.to.y] = nBoard[to_move.from.x][to_move.from.y];
     nBoard[to_move.from.x][to_move.from.y] = '.';
+//    return nBoard;
 }
 
 
@@ -187,8 +199,7 @@ bool Turn::Opponent(char& me, char& them)
 char** Turn::Copy_Board(char**& the_board)
 {
     int i=0;
-    char** temp = NULL;
-    temp = new char * [ROW];
+    char** temp = new char * [ROW];
     for(;i<ROW; ++i)
         temp[i] = new char [COL];
     i=0;
@@ -222,7 +233,12 @@ void Turn::Change_Player()
     }
 }
 
-bool Turn::Game_Over(char ** & the_board)
+void Turn::Remove_List(Move*& the_list)
+{
+    if(the_list) delete [] the_list;
+    the_list = NULL;
+}
+bool Turn::Game_Over(char**& the_board)
 {
     if(player)
     {
@@ -252,6 +268,7 @@ bool Turn::Game_Over(char ** & the_board)
     }
     return true;
 }
+
 int Turn::Board_Eval(char**& the_board)
 {
     int w=0,b=0;
@@ -259,22 +276,22 @@ int Turn::Board_Eval(char**& the_board)
     {
         for(int j=0; j< COL-1; ++j)
         {
-            cout<< i << j <<endl;
+//            cout<< i << j <<endl;
             if(the_board[i][j] == '.') continue;
             else
             {
                 if(isupper(the_board[i][j])) w += Peice_Value(the_board[i][j]);
-                else                     b += Peice_Value(the_board[i][j]);
+                else                         b += Peice_Value(the_board[i][j]);
             }
         }
     }
     if(player)//whites on turn
-        return w - b;
+        return (w - b);
     else
-        return b - w;
+        return (b - w);
 }
 
-void Player::Display_Board(char**& the_board)
+void Turn::Display_Board(char**& the_board)
 {
     for(int i=0; i<ROW; ++i)
         cout<<the_board[i]<<endl;
@@ -283,14 +300,14 @@ void Player::Display_Board(char**& the_board)
 
 void Player::Run()
 {
-    int list_index=0, list_max=0;
-    list = Generate_Moves(list_index,list_max);
+//    int list_index=0, list_max=0;
+//    list = Generate_Moves(list_index,list_max);
 //    char** temp = Copy_Board();
 //    cout<<Board_Eval(temp);
     //    Display_Moves(list,list_max);   PRIORITY LIST!!!
 }
 
-Move * Player::Generate_Moves(int& list_index, int& list_max)
+Move * Player::Generate_Moves(char**& the_board,int& list_index, int& list_max)
 {
 
     Move * temp = new Move[MOVES];
@@ -301,11 +318,11 @@ Move * Player::Generate_Moves(int& list_index, int& list_max)
         {    
             for(int j=COL-2; j>=0; --j)
             { 
-                if(isupper(board[i][j]))//is a white piece
-                    White_Moves(temp,list_index,i,j,board[i][j]);
+                if(isupper(the_board[i][j]))//is a white piece
+                    White_Moves(temp,list_index,i,j,the_board[i][j]);
             }
         }
-        //sort list
+/*        //sort list
         list_max = list_index;
         list_index = 0;
         ret_list = new Move[list_max];
@@ -314,18 +331,33 @@ Move * Player::Generate_Moves(int& list_index, int& list_max)
         ret_list = new Move[list_max];
         Copy_Moves(temp,list_index,list_max,ret_list);
         delete [] temp;
+*/
     }
-    else//BLACK
+    else if(!player)//BLACK
     {
         for(int i=0; i < ROW; ++i)
         {    
             for(int j = 0; j<COL-1; ++j)
             { 
-                if(!isupper(board[i][j]) && board[i][j] != '.')// is a black piece
-                    Black_Moves(temp,list_index,i,j,board[i][j]);
+                if(the_board[i][j] != '.')
+                {
+                    if(!isupper(the_board[i][j]))// is a black piece
+                        Black_Moves(temp,list_index,i,j,the_board[i][j]);
+                }
 
             }
         }
+/*        list_max = list_index;
+        list_index = 0;
+        ret_list = new Move[list_max];
+        Sort_Moves(temp,ret_list,list_index,list_max);
+        delete [] ret_list;
+        ret_list = new Move[list_max];
+        Copy_Moves(temp,list_index,list_max,ret_list);
+        delete [] temp;
+*/
+    }
+//sort list
         list_max = list_index;
         list_index = 0;
         ret_list = new Move[list_max];
@@ -335,7 +367,6 @@ Move * Player::Generate_Moves(int& list_index, int& list_max)
         Copy_Moves(temp,list_index,list_max,ret_list);
         delete [] temp;
 
-    }
     return ret_list;
 }
 
@@ -386,6 +417,7 @@ void Player::Copy_Moves(Move old_list[],int& list_index, int& list_max, Move new
         Set_Move(new_list[i],old_list[i]);
     }
 }
+
 //function to invoke proper peice to generate moves from
 void Player::White_Moves(Move*& list,int& list_index,int& x, int& y, char& peice)
 {  

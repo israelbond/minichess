@@ -28,10 +28,13 @@ class NetProto
 class Novice: public Player
 {
     public:
+
+        void Priority();
         void Go();
         void imcsplay(int argc, char **argv);
         int NegaMax(char**&,int); 
     protected:
+        int move_index;
         NetProto plug;
 };
 
