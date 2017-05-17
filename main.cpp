@@ -3,7 +3,7 @@
 int main()
 {
     Novice game;
-    game.Priority();
+    game.Go();//.Priority();
 //    game.Generate_Moves();
         
     return 0;

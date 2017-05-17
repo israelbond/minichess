@@ -12,9 +12,8 @@ void Point::Set_Point(int nx, int ny)
 
 void Point::Display_P()
 {
-    char c = (y+'a');
-    int d = (6-x);
-
+    char c = (y + 'a');
+    int d = (6 - x);
     fprintf(stdout, "%s%d", &c ,d);
 //    cout<< (char)(y +'a')<< 6-x; 
 }

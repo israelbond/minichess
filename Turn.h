@@ -41,7 +41,7 @@ class Turn
 
         int Board_Eval(char**&);
         bool Game_Over(char**&);
-        void Make_Move(char**&, Move&);
+        void Make_Move(char**&, Move);
         void Display_Turn(void);
         void Change_Player(void);
         void Set_Piece_List(void);
@@ -88,5 +88,6 @@ class Player : public Turn
     void Move_King(Move*&,int&,int&,int&,Peice&);
     void Move_Rook(Move*&,int&,int&,int&,Peice&);
     void Display_Moves(Move*&,int&);
+
 };
 

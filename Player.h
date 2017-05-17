@@ -8,6 +8,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <algorithm>
+#include <cctype>
 class NetProto
 {
     public: 
@@ -32,7 +33,7 @@ class Novice: public Player
         void Priority();
         void Go();
         void imcsplay(int argc, char **argv);
-        int NegaMax(char**&,int); 
+        int NegaMax(char**,int,int,int);//ABP refereences could be BAD
     protected:
         int move_index;
         NetProto plug;

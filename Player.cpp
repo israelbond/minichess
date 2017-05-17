@@ -274,81 +274,105 @@ void Novice::imcsplay(int argc, char **argv) {
     }
     fclose(nf);
 }
+
 void Novice::Priority()
 {
     int list_index=0, list_max=0;
     if(list) Remove_List(list); //get rid of old move list
-//    Display_Board(board);
     list = Generate_Moves(board,list_index,list_max); 
-    
-//    Display_Board(board);
-//    Display_Vars();
-//    Display_Moves(list,list_max);
-//    list[0].Display_M();
     Make_Move(board,list[0]);//makes single move worth the most points
-//    ++turn_count;
     list[0].Display_M();
-//    Display_Board(board);
-//    delete []list;
 }
 
 void Novice::Go()
 {  
-    int list_index=0, list_max=0, depth=2,cost=0;
-    char** this_board = Copy_Board(board);
-    Display_Board(this_board);
-    Display_Board(board);
-
-    list = Generate_Moves(this_board,list_index,list_max);
-    Display_Moves(list,list_max);
-
-    cost = NegaMax(this_board,depth);
-    cout<<cost<<"index "<<move_index<<endl; 
+    int list_index=0, list_max=0;
+    int depth=4,cost=0,bravo=1,alpha=1;
+//    char** the_board = Copy_Board(board);
+//    Display_Board(the_board);
+//    Display_Board(board);
+   
+    list = NULL;
+    list = Generate_Moves(board,list_index,list_max);
+//    Display_Moves(list,list_max);
+//    Display_Board(the_board);
+    cost = NegaMax(board,depth,alpha,bravo);
+//    Display_Board(the_board);
+//    cout<<cost<<"index "<<move_index<<endl; 
 //    list[move_index].Display_M();
     Make_Move(board,list[move_index]);
-    Display_Board(this_board);
+//    Display_Board(the_board);
     Display_Board(board);
+//    Remove_Board(the_board);
 }
 
-int Novice::NegaMax(char**& the_board,int depth)
+int Novice::NegaMax(char** the_board,int depth,int alpha,int beta)
 {   //has no king on board or depth is 0 
     if(depth == 0 || Game_Over(the_board)) return Board_Eval(the_board);
-
-    int movei=0, hold_val=0,list_max=0,list_index=0,val=-1,max_val=-1;
+   
+       int movei=0, hold_val=0,list_max=0,list_index=0,val=-1,max_val=-1;
     //legal moves
-    Move * list = Generate_Moves(the_board,list_index,list_max);
+    Move * the_list = Generate_Moves(the_board,list_index,list_max);
     //no moves 
-    if(!list) return Board_Eval(the_board);
+    if(!the_list) return Board_Eval(the_board);
+    char** new_board = Copy_Board(the_board);
     //Make a move
-    Make_Move(the_board,list[0]);
+    Make_Move(new_board,the_list[0]);
     //change player
-    Change_Player();
+    cout<<playing<<endl;
+    if(depth == 4) Display_Board(the_board);
+//***DUMB    Change_Player();
+
     //recursive call
-    max_val = - NegaMax(the_board,depth-1);
-    //unmake move
-    Unmove(the_board,list[0]);
+    max_val = -(NegaMax(new_board,depth-1, -beta, -alpha));
     //change player
-    Change_Player();
+//***DUMB    Change_Player();
+    //unmake move
+    Unmove(new_board,the_list[0]);
+/*    if(max_val > bravo) 
+    {
+        move_index = movei;
+//         <ROW; ++i)
+//          210     {
+//           211         for(int k(  Change_Player();
+            delete [] the_list;
+            the_list = NULL;
+            move_index = 0;
+        return max_val;//ALPHA BETA PRUN
+    }
+    alpha = max(alpha,max_val);//ABP
+*/
     for(int i=1; i<list_max;++i)
     {
-        Make_Move(the_board,list[i]);
+        Make_Move(new_board,the_list[i]);
         ++movei;
-        Change_Player();
-        val = - NegaMax(the_board,depth-1);
-        //if last move was worse than first move 
-        if(max_val > val)
-        {//store index value for better move
-            hold_val = (movei -1);
+        if(depth == 4) Display_Board(the_board);
+//***DUMB        Change_Player();
+        val = -(NegaMax(new_board,depth-1, -beta, -alpha));
+//***DUMB        Change_Player();
+        Unmove(new_board,the_list[i]);
+/*        if(val >= bravo)//ABP  -> MORE WORK NEEDED TO GET INDEX OF BEST MOVE 
+        {
+            move_index = movei;
+            Change_Player();
+            delete [] the_list;
+            the_list = NULL;
+            move_index = hold_val;
+            return val;
         }
-        else//get value for most current equivilant move
+*/        
+        //if last move was better than first move 
+        if(max_val< val)//get value for most current equivilant move
+        {
+            max_val = val;
             hold_val = movei;
-
-        Unmove(the_board,list[i]);
-        Change_Player();
-        max_val = max(max_val,val);
+        }
+//        max_val = max(max_val,val);
     }
-    delete [] list;
-    list = NULL;
+    delete [] the_list;
+    the_list = NULL;
+    Remove_Board(new_board);
+    new_board=NULL;
     move_index = hold_val;//sets class move index to make move.
     return max_val;
 }

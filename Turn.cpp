@@ -28,9 +28,9 @@ void Move::S_Move(Point& go_to, Point& come_from, int& points, char & peice)
 
 Turn::Turn(): board{NULL}, list{NULL}//, check{NULL}
 {
-    //    Starting_State();
+        Starting_State();
     Set_Piece_List();
-    Set_Turn();
+//    Set_Turn();
 }
 
 Turn::~Turn()
@@ -87,6 +87,7 @@ void Turn::Starting_State()
 {
     int i=0;
     playing = 'W';
+    player = 1;
     turn_count = 1;
 
     char temp[ROW][COL] = {{'k','q','b','n','r','\0'},
@@ -100,7 +101,8 @@ void Turn::Starting_State()
         board[j] = new char[COL];
     for(;i<ROW;++i)
     {
-        strcpy(board[i],temp[i]);
+        for(int k=0; k<COL; ++k)
+            board[i][k] = temp[i][k];
     }
 }
 
@@ -143,6 +145,7 @@ void Turn::Display_Vars()
         return hold;
 }
 */
+
 void Turn::Unmove(char**& hold, Move& to_move)
 {   
     hold[to_move.from.x][to_move.from.y] = hold[to_move.to.x][to_move.to.y];
@@ -151,7 +154,7 @@ void Turn::Unmove(char**& hold, Move& to_move)
 }
 
 
-void Turn::Make_Move(char**& nBoard, Move& to_move)
+void Turn::Make_Move(char**& nBoard, Move to_move)
 {
     nBoard[to_move.to.x][to_move.to.y] = nBoard[to_move.from.x][to_move.from.y];
     nBoard[to_move.from.x][to_move.from.y] = '.';
@@ -198,13 +201,17 @@ bool Turn::Opponent(char& me, char& them)
 
 char** Turn::Copy_Board(char**& the_board)
 {
-    int i=0;
-    char** temp = new char * [ROW];
+    int i=0, j=0;
+    char** temp = new char *[ROW];
     for(;i<ROW; ++i)
         temp[i] = new char [COL];
     i=0;
     for(;i<ROW; ++i)
-        strcpy(temp[i],the_board[i]);
+    {   
+        for(;j<COL-1; ++j)
+            temp[i][j] = the_board[i][j];
+        j=0;
+    }
     return temp;
 }
 
@@ -309,7 +316,6 @@ void Player::Run()
 
 Move * Player::Generate_Moves(char**& the_board,int& list_index, int& list_max)
 {
-
     Move * temp = new Move[MOVES];
     Move * ret_list = NULL;
     if(player)//WHITE
