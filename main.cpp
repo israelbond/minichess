@@ -1,10 +1,12 @@
 #include "Player.h"
 
-int main()
+int main(int argc, char** argv)
 {
+    srand(time(NULL));
     Novice game;
-    game.Go();//.Priority();
-//    game.Generate_Moves();
-        
+    game.Go();
+//   game.imcsplay(argc,argv);
     return 0;
 }
+
+

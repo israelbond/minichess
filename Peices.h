@@ -1,4 +1,5 @@
 
+#include <cstdio>
 #include <stdio.h>
 #include <iostream>
 #include <cstring>
@@ -15,11 +16,12 @@ class Point
     Point(int,int);
     ~Point();
     void Set_Point(int, int);
-    void Display_P();
+    void Show();
 
 //    protected:
         int x;
         int y;
+//        char word[2];
 };
 
 class Peice

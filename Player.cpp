@@ -39,7 +39,7 @@ FILE * NetProto::netopen(char *host, int port) {
 //FILE *logfile;        //COMMENTED OUTSKY! already declaired in Player.h
 
 void NetProto::startlog(void) {
-    logfile = fopen("minime2.log", "w");
+    logfile = fopen("hyphen.log", "w");
     if (!logfile) {
         perror("logfile");
         exit(1);
@@ -136,13 +136,15 @@ void Novice::imcsplay(int argc, char **argv) {
     }
     char mecolor = '?';
     int megame = 0;
-    switch(argv[2][0]) {
+    switch(argv[1][0]) {
         case 'O':
-            switch(argv[2][1]) {
+            switch(argv[2][0]) {
                 case 'W':
                 case 'B':
                 case '?':
-                    mecolor = argv[2][1];
+                    mecolor = argv[2][0];
+                    playing = mecolor;
+                    Set_Player();
                     break;
                 default:
                     fprintf(stderr,"Offered game failed");
@@ -150,12 +152,15 @@ void Novice::imcsplay(int argc, char **argv) {
             }
             break;
         case 'A': {
-                      char ch = argv[2][1];
+                      char ch = argv[2][0];
                       if (isdigit(ch)) {
                           megame = atoi(&argv[2][1]);
                       } else if (ch == 'W' || ch == 'B') {
                           mecolor = ch;
-                          megame = atoi(&argv[2][2]);
+                          playing = mecolor;//MINE 
+                          Set_Player();//sets variable for use in move gen.
+                          megame = atoi(&argv[2][1]);
+//                          turn_count = megame;//MINE
                       } else {
                           fprintf(stderr,"Accepted game failed");      
                           exit(0);
@@ -214,22 +219,22 @@ void Novice::imcsplay(int argc, char **argv) {
         (void) plug.expectcmd(nf, 1, 105, 106, 0);
         plug.logmsg((char*)"opponent found");
     }
-/*    struct state s = s0;
-    s.cureval = eval(&s);
-    if (nttable > 0)
-        s.curzhash = zhash(&s);
-        */
+    /*    struct state s = s0;
+          s.cureval = eval(&s);
+          if (nttable > 0)
+          s.curzhash = zhash(&s);
+          */
     while (1) {
         int ch = fgetc(nf);
         int r = ungetc(ch, nf);
         assert(r != EOF);
-        if (isdigit(ch)) {
-//            s = readstate(nf, 1);
-//            s.cureval = eval(&s);
-//            if (nttable > 0)
-//                s.curzhash = zhash(&s);
-            continue;
-        }
+        //        if (isdigit(ch)) {
+        //            s = readstate(nf, 1);
+        //            s.cureval = eval(&s);
+        //            if (nttable > 0)
+        //                s.curzhash = zhash(&s);
+        //            continue;
+        //        }
         switch (ch) {
             case '?': {
                           char *r = plug.getnet(nf, (char*)"?");
@@ -238,6 +243,9 @@ void Novice::imcsplay(int argc, char **argv) {
                           char *tl = strtok(0, " ");
                           char *tr = strtok(0, " ");
                           assert(tl && tr);
+                          char* mine = Go();//Priority();
+               //           Create_M(mine);
+                          plug.sendcmd(nf,mine);
 //                          int t = readtimems(tl);
 //                          t = 95 * t / (100 * ((81 - s.ply) / 2));
 //                          struct move m = idnegamax(&s, t, 0);
@@ -257,6 +265,10 @@ void Novice::imcsplay(int argc, char **argv) {
                           ch = fgetc(nf);
                       while (isspace(ch));
                       ungetc(ch, nf);
+                      char move[5];
+                      fscanf(nf,"%s",move);
+                      Opp_Move(move);
+                      propawn =Promotions(propawn);
 //                      struct move m = getmove(nf, &s);
 //                      move(&s, &m, 0);
                       continue;
@@ -275,104 +287,171 @@ void Novice::imcsplay(int argc, char **argv) {
     fclose(nf);
 }
 
-void Novice::Priority()
+void Novice::Create_M(char move[])
 {
-    int list_index=0, list_max=0;
+     Move me;
+    me.from.y = (move[0] - 'a');   
+    me.from.x = (54 - (int)move[1]); 
+    me.to.y = (move[3] - 'a');
+    me.to.x = (54 - (int)move[4]);
+    Server_Dis(me);
+}
+void Novice::Opp_Move(char move[])
+{
+    Move theirs;
+    theirs.from.y = (move[0] - 'a');   
+    theirs.from.x = (54 - (int)move[1]); 
+    theirs.to.y = (move[3] - 'a');
+    theirs.to.x = (54 - (int)move[4]);
+    Make_Move(theirs);
+//    Server_Dis(theirs);
+}
+
+char* Novice::Priority()//modifyed to produce random play
+{
+    bool queen=false;
+    int list_index=0, list_max=0, this_player = player;
     if(list) Remove_List(list); //get rid of old move list
-    list = Generate_Moves(board,list_index,list_max); 
-    Make_Move(board,list[0]);//makes single move worth the most points
-    list[0].Display_M();
+    list = Generate_Moves(this_player,list_index,list_max); 
+    //added random play functionality
+    list_index = rand() % list_max;
+    Make_Move(list[list_index]);//makes single move worth the most points
+    queen = Promotions(queen);
+//    if(queen) cout<<"PROMOTED!"<<endl;
+    char * str = list[list_index].Make_string();
+    //    cout<<str<<endl;
+    delete [] list;
+    list=NULL;
+    ++turn_count;
+    return str;
 }
 
-void Novice::Go()
+char * Novice::Go()
 {  
-    int list_index=0, list_max=0;
-    int depth=4,cost=0,bravo=1,alpha=1;
-//    char** the_board = Copy_Board(board);
-//    Display_Board(the_board);
-//    Display_Board(board);
-   
-    list = NULL;
-    list = Generate_Moves(board,list_index,list_max);
-//    Display_Moves(list,list_max);
-//    Display_Board(the_board);
-    cost = NegaMax(board,depth,alpha,bravo);
-//    Display_Board(the_board);
-//    cout<<cost<<"index "<<move_index<<endl; 
-//    list[move_index].Display_M();
-    Make_Move(board,list[move_index]);
-//    Display_Board(the_board);
-    Display_Board(board);
-//    Remove_Board(the_board);
+    char* temp; bool queen=false;
+    int cost=0, list_index=0, list_max=0, this_player = player;
+    int depth=DEPTH;
+    Display_Board();
+    list = Generate_Moves(this_player,list_index,list_max);
+    move_index =0;
+    cost = NegaMax(this_player,depth);
+    temp =  list[move_index].Make_string();
+    Make_Move(list[move_index]);
+    queen = Promotions(queen);
+    Display_Board();
+    delete [] list;
+    list=NULL;
+    ++turn_count;
+    return temp;
 }
 
-int Novice::NegaMax(char** the_board,int depth,int alpha,int beta)
-{   //has no king on board or depth is 0 
-    if(depth == 0 || Game_Over(the_board)) return Board_Eval(the_board);
-   
-       int movei=0, hold_val=0,list_max=0,list_index=0,val=-1,max_val=-1;
-    //legal moves
-    Move * the_list = Generate_Moves(the_board,list_index,list_max);
-    //no moves 
-    if(!the_list) return Board_Eval(the_board);
-    char** new_board = Copy_Board(the_board);
-    //Make a move
-    Make_Move(new_board,the_list[0]);
-    //change player
-    cout<<playing<<endl;
-    if(depth == 4) Display_Board(the_board);
-//***DUMB    Change_Player();
 
-    //recursive call
-    max_val = -(NegaMax(new_board,depth-1, -beta, -alpha));
-    //change player
-//***DUMB    Change_Player();
-    //unmake move
-    Unmove(new_board,the_list[0]);
-/*    if(max_val > bravo) 
+int Novice::NegaMax(int this_player,int depth)
+{ 
+    //if players king is gone or depth is reached: ->return board value
+    if(depth == 0 || Game_Over(this_player)) return Board_Eval(this_player);
+    int i=0,maxi=0,val_p=0, val=0, holdi=0; bool queen=false;
+
+    //generate ordered move list(greatest }to{ lowest)  
+    Move* the_list = Generate_Moves(this_player,i,maxi);
+    //no list
+    if(!the_list) return Board_Eval(this_player);
+    Make_Move(the_list[0]);
+    queen = Promotions(queen);
+    val_p = -(NegaMax( -this_player, depth - 1));
+    Unmove(queen,the_list[0]); 
+    queen =false;
+    i=1;
+    for(;i<maxi;++i)
     {
-        move_index = movei;
-//         <ROW; ++i)
-//          210     {
-//           211         for(int k(  Change_Player();
-            delete [] the_list;
-            the_list = NULL;
-            move_index = 0;
-        return max_val;//ALPHA BETA PRUN
+        Make_Move(the_list[i]);
+        queen = Promotions(queen);
+        val = -(NegaMax( - this_player,depth - 1));
+        Unmove(queen,the_list[i]);
+        if(val_p<val)
+        {
+            val_p = val;
+            if(depth == DEPTH) holdi = i;
+        }
     }
-    alpha = max(alpha,max_val);//ABP
-*/
+    if(depth == DEPTH) move_index = holdi;
+    delete []the_list;
+    the_list = NULL;
+    return val_p;
+}
+
+int Novice::AB_NegaMax(int this_player,int depth,int alpha,int beta)
+{
+    //has no king on board or depth is 0 
+    if(depth == 0 || Game_Over(this_player)) return Board_Eval(this_player); 
+    bool queen = false;//used to validate promotions
+    int movei=0, hold_val=0,list_max=0,list_index=0,val=-1,max_val=-1;
+    //legal moves
+    Move * the_list = Generate_Moves(this_player,list_index,list_max);
+    //no moves 
+    if(!the_list) return Board_Eval(this_player);
+    //new board
+    //Make a move
+    Make_Move(the_list[0]);
+    queen = Promotions(queen);
+    //recursive call
+    max_val = -(AB_NegaMax(-this_player,depth-1, -beta, -alpha));
+    //unmake move & **CHECK IF PROMOTED**
+    Unmove(queen,the_list[0]);
+    
+       if(max_val > beta) 
+       {
+       delete [] the_list;
+       the_list = NULL;
+       if(depth == DEPTH)   move_index = 0;
+       return max_val;//ALPHA BETA PRUN
+       }
+       alpha = max(alpha,max_val);//ABP
+       
     for(int i=1; i<list_max;++i)
     {
-        Make_Move(new_board,the_list[i]);
+        //make move
+        Make_Move(the_list[i]);
         ++movei;
-        if(depth == 4) Display_Board(the_board);
-//***DUMB        Change_Player();
-        val = -(NegaMax(new_board,depth-1, -beta, -alpha));
-//***DUMB        Change_Player();
-        Unmove(new_board,the_list[i]);
-/*        if(val >= bravo)//ABP  -> MORE WORK NEEDED TO GET INDEX OF BEST MOVE 
-        {
-            move_index = movei;
-            Change_Player();
-            delete [] the_list;
-            the_list = NULL;
-            move_index = hold_val;
-            return val;
-        }
-*/        
+        queen = Promotions(queen);
+        //recursive call
+        val = -(AB_NegaMax(-this_player,depth-1, -beta, -alpha));
+        //unmake move
+        Unmove(queen,the_list[i]);
+        
+           if(val >= beta)//ABP   
+           {
+           delete [] the_list;
+           the_list = NULL;
+           if(depth == DEPTH) move_index = movei;
+           return val;
+           }
+                   
         //if last move was better than first move 
-        if(max_val< val)//get value for most current equivilant move
+        if(max_val < val)//get value for most current equivilant move
         {
             max_val = val;
-            hold_val = movei;
+            if(depth == DEPTH)
+                hold_val = movei;
         }
 //        max_val = max(max_val,val);
+        //        alpha = max(alpha,val);
     }
     delete [] the_list;
     the_list = NULL;
-    Remove_Board(new_board);
-    new_board=NULL;
-    move_index = hold_val;//sets class move index to make move.
+    if(depth == DEPTH) move_index = hold_val;//sets class move index to make move.
     return max_val;
 }
+/*
+void Novice::Display_Board(char**& the_board)
+{
+    for(int i=0; i<ROW; ++i)
+    {
+        for(int j=0; j<COL-1;++j)
+            cout<<the_board[i][j];
+        cout<<'\n';
+    }
+    cout<<'\n';
+}
+*/
+

@@ -20,12 +20,14 @@ class Move // : public Turn
 
         void S_Move(Point&,Point&,int&,char&);
 //        void Insert();
-        void Display_M();
+        char* Make_string();
 //    protected:
         int value;
         char type;
+        
         Point to;
         Point from;
+        char word[5];
 //        Move * next;
 };
 
@@ -39,23 +41,23 @@ class Turn
         void Set_Player(void);
         void Set_Move(Move&,Move&);
 
-        int Board_Eval(char**&);
-        bool Game_Over(char**&);
-        void Make_Move(char**&, Move);
+        int Board_Eval(int);
+        bool Game_Over(int);
+        void Make_Move( Move);
         void Display_Turn(void);
         void Change_Player(void);
         void Set_Piece_List(void);
         int Peice_Value(char&);
-        bool Opponent(char&,char&);
+        bool Opponent(char,char);
 //        void Moved(char**&,Move);
-        void Unmove(char**&,Move&);
-        char** Copy_Board(char**&);
-        void Remove_Board(char**&);
+        void Unmove(bool &,Move&);
+//        char** Copy_Board(char**&);
+//        void Remove_Board(char**&);
         void Change_player(void);
-        void Display_Vars();                
-        void Display_Board(char**&);
-        void Remove_List(Move*&);
-        
+        void Display_Vars(void);                
+        void Display_Board();
+        void Remove_List(Move*&); 
+        void Server_Dis(Move);
 //    protected:
 
         char playing;
@@ -71,9 +73,9 @@ class Turn
 class Player : public Turn
 {
     public:
-
+    Player();
     void Run(void);
-    Move* Generate_Moves(char**&,int&,int&);
+    Move* Generate_Moves(int,int&,int&);
     Move* Sort_Moves(Move[],Move[],int&,int&);
     void Copy_Moves(Move[],int&,int&,Move[]);
     void Merge_Top_Down(Move[],int&,int&,int&,Move[]);
@@ -88,6 +90,9 @@ class Player : public Turn
     void Move_King(Move*&,int&,int&,int&,Peice&);
     void Move_Rook(Move*&,int&,int&,int&,Peice&);
     void Display_Moves(Move*&,int&);
+    bool Promotions(bool&);
 
+    bool propawn;
+//    void Display_Board(char**&);
 };
 

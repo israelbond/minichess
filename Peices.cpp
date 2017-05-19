@@ -1,6 +1,6 @@
 #include "Peices.h"
 
-Point::Point() : x{0}, y{0} {}
+Point::Point() : x{0}, y{0}/*,word{'\0'}*/ {}
 Point::Point(int nx, int ny) : x{nx}, y{ny} {}
 Point::~Point(){}
 
@@ -10,12 +10,15 @@ void Point::Set_Point(int nx, int ny)
     this->y = ny;
 }
 
-void Point::Display_P()
+void Point::Show()
 {
-    char c = (y + 'a');
-    int d = (6 - x);
-    fprintf(stdout, "%s%d", &c ,d);
-//    cout<< (char)(y +'a')<< 6-x; 
+   cout<<(char)(y + 'a')<<(int)(6-x);
+/*    int d1 = (6 - this->from.x);
+    char c2 = (char)(this->to.y + 'a');
+    int d2 = (6 - this->to.x);
+    sprintf(word, "%c%d-%c%d" ,c1 ,d1 ,c2 ,d2);
+*/  
+    
 }
 
 Peice::Peice():/* type{'\0'},*/ score{0}
