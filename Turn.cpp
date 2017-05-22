@@ -1,10 +1,16 @@
+/*Israel Bond
+ * MiniChess player
+ * CS442
 
+ This file contains all method implementations for the Turn class (BASE), 
+ the Player (derived from Turn) and Move class(has a) */
 #include "Turn.h"
 
 Move::Move(): value{0}, type{'x'},word{'\0'} /*, next{NULL}*/ {}
 
 
-//calls functions to display move: CHANGE TO STDOUT!!!
+//function to build a string to be passed to the other player for 
+//move on board evaluations
 char* Move::Make_string()
 {
     char c1 = (char)(this->from.y + 'a');
@@ -12,10 +18,11 @@ char* Move::Make_string()
     char c2 = (char)(this->to.y + 'a');
     int d2 = (6 - this->to.x);
     sprintf(word, "%c%d-%c%d" ,c1 ,d1 ,c2 ,d2);
-    fprintf(stdout, "%s", word);
+//    fprintf(stdout, "%s", word);
     return word;
 }
 
+//function to set a move objects variables with to and from Points(positions)
 void Move::S_Move(Point& go_to, Point& come_from, int& points, char & peice)
 {
     type = peice;
@@ -24,13 +31,24 @@ void Move::S_Move(Point& go_to, Point& come_from, int& points, char & peice)
     from.Set_Point(come_from.x, come_from.y);
 }
 
-Turn::Turn(): board{NULL}, list{NULL}//, check{NULL}
+void Move::Display_M()
 {
-//       Starting_State();
-    Set_Piece_List();
- Set_Turn();
+    char c1 = (char)(this->from.y + 'a');
+    int d1 = (6 - this->from.x);
+    char c2 = (char)(this->to.y + 'a');
+    int d2 = (6 - this->to.x);
+ //   fprintf(stdout,"%c%d-%c%d",c1,d1,c2,d2);
 }
 
+//Base class constructor
+Turn::Turn(): board{NULL}, list{NULL}
+{
+       Starting_State();
+    Set_Piece_List();
+//    Set_Turn();
+}
+
+//Base class destructor
 Turn::~Turn()
 {
     if(board != NULL)
@@ -62,10 +80,10 @@ void Turn::Set_Turn()
     for(int i=0; i < ROW; ++i)
         dumb=fscanf(stdin,"%s", board[i]);
     if(dumb) ;
-//    Display_Vars();
-    
-}
+    //    Display_Vars();
 
+}
+//Sets a MOVE object to the move objects values: BOTH passed by reference
 void Turn::Set_Move(Move & to_add, Move& to_get)
 {
     to_add.value = to_get.value;
@@ -73,6 +91,7 @@ void Turn::Set_Move(Move & to_add, Move& to_get)
     to_add.from.Set_Point(to_get.from.x,to_get.from.y);
     to_add.to.Set_Point(to_get.to.x,to_get.to.y);
 }
+
 //sets variable to varify which side is playing
 void Turn::Set_Player()
 {
@@ -83,21 +102,19 @@ void Turn::Set_Player()
 }
 
 //Funstion sets up a new game with a starting chess board,
-//and White player on first turn.
 void Turn::Starting_State()
 {
     int i=0;
-//    playing = 'W';
-//    player = 1;
     turn_count = 1;
 
+//    player = -1; playing = 'B';
     char temp[ROW][COL] = {{'k','q','b','n','r','\0'},
         {'p','p','p','p','p','\0'},
         {'.','.','.','.','.','\0'},
         {'.','.','.','.','.','\0'},
         {'P','P','P','P','P','\0'},
         {'R','N','B','Q','K','\0'}};
-     board = new char*[ROW];
+    board = new char*[ROW];
     for(int j=0;j<ROW;++j) 
         board[j] = new char[COL];
     for(;i<ROW;++i)
@@ -107,6 +124,7 @@ void Turn::Starting_State()
     }
 }
 
+//Method called once to initialize the Peice set
 void Turn::Set_Piece_List()
 {
     pieces[0].S_W_Pawn();
@@ -117,12 +135,9 @@ void Turn::Set_Piece_List()
     pieces[5].S_Queen();
     pieces[6].S_Rook();
 }
-
+//Function used for display when playing across the server
 void Turn::Server_Dis(Move m)
 {
-//    m.from.Show();
-//    cout<<"-";
-//    m.to.Show();
     char c = '\0';
     if(playing == 'W')
         c = 'B';
@@ -131,6 +146,7 @@ void Turn::Server_Dis(Move m)
     fprintf(stdout,"\n\n\n%d %c",turn_count,c);
     Display_Board();
 }
+
 //Function uses standard out to produce an output of class variables
 void Turn::Display_Turn()
 {
@@ -140,23 +156,18 @@ void Turn::Display_Turn()
     for(int i = 0; i<ROW; ++i)
         fprintf(stdout,"%s\n",board[i]);
 }
-
+//Helper function for debugging by displaying player components and the board
+//being played on.
 void Turn::Display_Vars()
 {
-        cout<<"Player  "<<playing<<endl;
-        cout<<"P_val   "<<player<<endl;
-        cout<<"P_turns "<<turn_count<<endl;
-        Display_Board();
+    cout<<"Player  "<<playing<<endl;
+    cout<<"P_val   "<<player<<endl;
+    cout<<"P_turns "<<turn_count<<endl;
+    Display_Board();
 }
- 
-//creats copy of class board and places move on new board
-/*char** Turn::Moved(char**& board,Move to_move)
-{
-//        Make_Move(board,to_move);
-        return board;
-}
-*/
 
+//function which unmakes a move from the board. varifies if there was a 
+//promotion when peice was moved and depending handles each case accordingly
 void Turn::Unmove(bool& queen, Move& to_move)
 {   //check to see if there was a promotion last move
     if(queen)
@@ -185,7 +196,8 @@ void Turn::Unmove(bool& queen, Move& to_move)
     }
 }
 
-
+//Method to Make a Move on the board. No need to re evaluate if the position is 
+//on the board since this move wouldn't have been in the list if it wasn't
 void Turn::Make_Move( Move to_move)
 {
     board[to_move.to.x][to_move.to.y] = board[to_move.from.x][to_move.from.y];
@@ -193,7 +205,7 @@ void Turn::Make_Move( Move to_move)
 }
 
 
-//function returns values of peice on board
+//function returns values of the peice on the board
 int Turn::Peice_Value(char& peice)
 {
     char temp = peice;
@@ -216,67 +228,76 @@ int Turn::Peice_Value(char& peice)
                   cout<<"\nUNRECONGNIZED CHARACTER"<<endl;
                   exit(1);
     }
-//    cout<<"\nERROR PEICE VALUE"<<endl;
+    //    cout<<"\nERROR PEICE VALUE"<<endl;
     return 0;
 }    
+
 //function returns true on attacks and false on teammate peice value
 //XOR
 bool Turn::Opponent(char me, char them)
 {
-    if(them != '.')
+    if(them != '.'|| me != '.')//if either one isn't a peice this is not an attack!
     {
         if((isupper(me)) != (isupper(them))) return true;
     }
     return false;
 }
-/*
-char** Turn::Copy_Board(char**& the_board)
-{
-    int i=0, j=0;
-    char** temp = new char *[ROW];
-    for(;i<ROW; ++i)
-        temp[i] = new char [COL];
-    i=0;
-    for(;i<ROW; ++i)
-    {   
-        for(;j<COL-1; ++j)
-            temp[i][j] = the_board[i][j];
-        j=0;
-    }
-    return temp;
-}
 
-void Turn::Remove_Board(char**& board)
-{
-    if(board)
-    {
-        for(int i=0;i < ROW; ++i)
-            delete [] board[i];
-        delete [] board;
-        board = NULL;
-    }
-}
-*/
+/*      COMMENTED OUT!!!
+ *      as this was used when I was passing and copying board states for evaluations
+ *
+   char** Turn::Copy_Board(char**& the_board)
+   {
+   int i=0, j=0;
+   char** temp = new char *[ROW];
+   for(;i<ROW; ++i)
+   temp[i] = new char [COL];
+   i=0;
+   for(;i<ROW; ++i)
+   {   
+   for(;j<COL-1; ++j)
+   temp[i][j] = the_board[i][j];
+   j=0;
+   }
+   return temp;
+   }
+
+   void Turn::Remove_Board(char**& board)
+   {
+   if(board)
+   {
+   for(int i=0;i < ROW; ++i)
+   delete [] board[i];
+   delete [] board;
+   board = NULL;
+   }
+   }
+   */
+
+//method which switchs between players depending on the value already stored
 void Turn::Change_Player()
 {
-    if(player)
+    if(player == 1)
     {
         playing = 'B';
         player = -1;
     }
-    else
+    else if( player == -1)
     {
         playing = 'W';
         player = 1;
     }
 }
 
+//removes a list of moves and resets the pointer to NULL for future evaluations
 void Turn::Remove_List(Move*& the_list)
 {
     if(the_list) delete [] the_list;
     the_list = NULL;
 }
 
+//Function defines END GAME state: where the player on move has NO KING
+//RETURNS False if king is found and True If player has no king on board.
 bool Turn::Game_Over(int this_player)
 {
     if(this_player == 1)
@@ -285,20 +306,20 @@ bool Turn::Game_Over(int this_player)
         {
             for(int j=0; j< COL-1; ++j)
             {
-                if(board[i][j] !='K')
+                if(board[i][j] == 'K')
                 {
                     return false;
                 }
             }
         }
     }
-    else
+    else if(this_player == -1)
     {
-         for(int i=0; i<ROW;++i)
+        for(int i=0; i<ROW;++i)
         {
             for(int j=0; j< COL-1; ++j)
             {
-                if(board[i][j] !='k')
+                if(board[i][j] =='k')
                 {
                     return false;
                 }
@@ -308,6 +329,9 @@ bool Turn::Game_Over(int this_player)
     return true;
 }
 
+//this function gets the sum for each players pieces that remain on the 
+//board and returns them in an order to inform the playing player of THEIR
+//score!
 int Turn::Board_Eval( int the_player)
 {
     int w=0,b=0;
@@ -315,7 +339,7 @@ int Turn::Board_Eval( int the_player)
     {
         for(int j=0; j< COL-1; ++j)
         {
-//            cout<< i << j <<endl;
+            //            cout<< i << j <<endl;
             if(board[i][j] == '.') continue;
             else
             {
@@ -325,29 +349,36 @@ int Turn::Board_Eval( int the_player)
         }
     }
     if(the_player == 1)//whites on turn
-        return (w - b);
+        return (w - b);//negative Black winning, positive White winning 
     else
-        return (b - w);
+        return (b - w);//positive Black winning, negative White winning
 }
 
+
+//method used to display the board *MOSTLY for testing purposes
 void Turn::Display_Board()
 {
+    cout<<'\n';
     for(int i=0; i<ROW; ++i)
         cout<<board[i]<<endl;
     cout<<'\n';
 }
 
+//player class constructor... NOTHING
 Player::Player() {}
 
+//method used for debugging specific situations with my program
 void Player::Run()
 {
-//    int list_index=0, list_max=0;
-//    list = Generate_Moves(list_index,list_max);
-//    char** temp = Copy_Board();
-//    cout<<Board_Eval(temp);
+    //    int list_index=0, list_max=0;
+    //    list = Generate_Moves(list_index,list_max);
+    //    char** temp = Copy_Board();
+    //    cout<<Board_Eval(temp);
     //    Display_Moves(list,list_max);   PRIORITY LIST!!!
 }
 
+//this Function generates a move list, orders it in order of highest points
+//earned to lowest points.
 Move * Player::Generate_Moves(int this_player,int& list_index, int& list_max)
 {
     Move * temp = new Move[MOVES];
@@ -378,7 +409,7 @@ Move * Player::Generate_Moves(int this_player,int& list_index, int& list_max)
             }
         }
     }
-//sort list
+    //sort list
     if(list_index ==0) return NULL;
     list_max = list_index;
     list_index = 0;
@@ -391,6 +422,9 @@ Move * Player::Generate_Moves(int this_player,int& list_index, int& list_max)
     return ret_list;
 }
 
+/*                  MERGE SORT                  */
+
+//wrapper method to sort array of moves contained within old_list[]
 Move* Player::Sort_Moves(Move old_list[], Move new_list[],int& list_index,int& list_max)
 {
     Copy_Moves(old_list, list_index, list_max, new_list);
@@ -399,6 +433,7 @@ Move* Player::Sort_Moves(Move old_list[], Move new_list[],int& list_index,int& l
     return NULL;    
 }
 
+//function which is the work horse for Merge sort
 void Player::Split_Merge(Move new_list[],int& index,int& max, Move old_list[])
 {
     if(max - index <2 ) return;
@@ -408,6 +443,7 @@ void Player::Split_Merge(Move new_list[],int& index,int& max, Move old_list[])
     Merge_Top_Down(new_list,index,mid,max,old_list);
 }
 
+//function which stors the moves in the new_list[] depending on the moves value
 void Player::Merge_Top_Down(Move old_list[],int& index,int& mid,int& max,Move new_list[])
 {
     int i = index, j = mid;
@@ -430,6 +466,7 @@ void Player::Merge_Top_Down(Move old_list[],int& index,int& mid,int& max,Move ne
 }
 
 
+//function which copies one array of elements into another. 
 //copy moves: invokes Set_Move
 void Player::Copy_Moves(Move old_list[],int& list_index, int& list_max, Move new_list[])
 {
@@ -439,7 +476,8 @@ void Player::Copy_Moves(Move old_list[],int& list_index, int& list_max, Move new
     }
 }
 
-//function to invoke proper peice to generate moves from
+//function to invoke proper peice to generate moves from based on player on move
+//and peice being evaluated
 void Player::White_Moves(Move*& list,int& list_index,int& x, int& y, char& peice)
 {  
     char temp = peice;
@@ -464,6 +502,8 @@ void Player::White_Moves(Move*& list,int& list_index,int& x, int& y, char& peice
     }
 }
 
+//function to invoke proper peice to generate moves from based on player on move
+//and peice being evaluated
 void Player::Black_Moves(Move*& list,int& list_index,int& x, int& y, char& peice)
 {  
     char temp = peice;
@@ -487,7 +527,9 @@ void Player::Black_Moves(Move*& list,int& list_index,int& x, int& y, char& peice
                   exit(1);
     }
 }
-
+/*********                  MOVE METHODS                        *********/
+        //next 7 functions check to see that a move or an attack can be added 
+        //to the move list
 void Player::Move_W_Pawn(Move*& list,int& list_index,int& xpos, int& ypos,Peice & to_check)
 {
     //grab values for dimentions of piece "positions"
@@ -509,14 +551,17 @@ void Player::Move_W_Pawn(Move*& list,int& list_index,int& xpos, int& ypos,Peice 
                     therey >=0 && therey < COL -1)
             {
                 //move for Pawn 
-                if(j == 0 && board[therex][therey] == '.') //Opponent(board[xpos][ypos], board[therex][therey]))
+                if(j == 0) //Opponent(board[xpos][ypos], board[therex][therey]))
                 {
-                    to_there.Set_Point(therex,therey);
-                    peicev = Peice_Value(board[therex][therey]);
-                    list[list_index].S_Move(to_there,from_here, peicev, board[therex][therey]);
-                    ++list_index;
+                    if(board[therex][therey] == '.')
+                    {
+                        to_there.Set_Point(therex,therey);
+                        peicev = Peice_Value(board[therex][therey]);
+                        list[list_index].S_Move(to_there,from_here, peicev, board[therex][therey]);
+                        ++list_index;
+                    }
                 }//possible Pawn attack
-                else if(Opponent(board[xpos][ypos], board[therex][therey])) //board[therex][therey] == '.')
+                else if(Opponent(board[xpos][ypos], board[therex][therey])&& board[therex][therey] != '.')
                 {
                     to_there.Set_Point(therex,therey);
                     peicev = Peice_Value(board[therex][therey]);
@@ -549,13 +594,16 @@ void Player::Move_B_Pawn(Move*& list,int& list_index,int& xpos, int& ypos,Peice 
                     therey >=0 && therey < COL -1)
             {
                 //Move for Pawn 
-                if(j == 0 && (board[therex][therey] == '.')) 
+                if( j == 0 ) 
                 {
-                    to_there.Set_Point(therex,therey);
-                    peicev = Peice_Value(board[therex][therey]);
-                    list[list_index].S_Move(to_there,from_here, peicev, board[therex][therey]);
-                    ++list_index;
-                }//possible Pawn attack
+                    if(board[therex][therey] == '.')
+                    {
+                        to_there.Set_Point(therex,therey);
+                        peicev = Peice_Value(board[therex][therey]);
+                        list[list_index].S_Move(to_there,from_here, peicev, board[therex][therey]);
+                        ++list_index;
+                    }
+                } //possible Pawn attack
                 else if(Opponent(board[xpos][ypos], board[therex][therey])) 
                 {
                     to_there.Set_Point(therex,therey);
@@ -564,6 +612,7 @@ void Player::Move_B_Pawn(Move*& list,int& list_index,int& xpos, int& ypos,Peice 
                     ++list_index;
                 }
             }
+
         }
     }
 }
@@ -807,12 +856,13 @@ bool Player::Promotions(bool& not_pawn)
     return false;
 }
 
+//method for displaying move lists for evaluation** not currently used
 void Player::Display_Moves(Move*& list, int& list_max)
 {
     for(int i=0; i < list_max; ++i)
     {
         cout<<"MOVE "<<i+1<<'\t';
-//        list[i].Display_M();
+                list[i].Display_M();
         cout<<'\n';
     }
 }

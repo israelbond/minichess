@@ -1,4 +1,8 @@
-
+/*Israel Bond
+ * MiniChess player
+ * CS442
+ 
+ file contains class declarations for: POINT & PEICE */
 #include <cstdio>
 #include <stdio.h>
 #include <iostream>
@@ -18,10 +22,8 @@ class Point
     void Set_Point(int, int);
     void Show();
 
-//    protected:
         int x;
         int y;
-//        char word[2];
 };
 
 class Peice
@@ -37,8 +39,6 @@ class Peice
         void S_Knight();
         void S_Bishop();
 
-//    protected:
-//        char type;
         int score;
         Point dim;
         Point ** shape;

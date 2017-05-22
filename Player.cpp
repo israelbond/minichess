@@ -1,5 +1,16 @@
+/*Israel Bond
+ * MiniChess player
+ * CS442
+ 
+ This file contains the class methods used to interact with the server and 
+ derived class for player manipulations. the server code is that which was 
+ provided to us by the professor and is mostly written in the C programming 
+ language.*/
 #include "Player.h"
 
+/*FUNCTIONS PROVIDED ONLINE MY PROFESSORi & MODIFIED AS NEEDED
+ * Commented out code is left in for convenience and to clarify what is going 
+ * on*/
 
 FILE * NetProto::netopen(char *host, int port) {
     struct hostent *hp = gethostbyname(host);
@@ -160,7 +171,6 @@ void Novice::imcsplay(int argc, char **argv) {
                           playing = mecolor;//MINE 
                           Set_Player();//sets variable for use in move gen.
                           megame = atoi(&argv[2][1]);
-//                          turn_count = megame;//MINE
                       } else {
                           fprintf(stderr,"Accepted game failed");      
                           exit(0);
@@ -228,13 +238,14 @@ void Novice::imcsplay(int argc, char **argv) {
         int ch = fgetc(nf);
         int r = ungetc(ch, nf);
         assert(r != EOF);
-        //        if (isdigit(ch)) {
-        //            s = readstate(nf, 1);
-        //            s.cureval = eval(&s);
-        //            if (nttable > 0)
-        //                s.curzhash = zhash(&s);
-        //            continue;
-        //        }
+/*              if (isdigit(ch)) {
+                    s = readstate(nf, 1);
+                    s.cureval = eval(&s);
+                    if (nttable > 0)
+                        s.curzhash = zhash(&s);
+                    continue;
+                }
+*/
         switch (ch) {
             case '?': {
                           char *r = plug.getnet(nf, (char*)"?");
@@ -246,27 +257,27 @@ void Novice::imcsplay(int argc, char **argv) {
                           char* mine = Go();//Priority();
                //           Create_M(mine);
                           plug.sendcmd(nf,mine);
-//                          int t = readtimems(tl);
-//                          t = 95 * t / (100 * ((81 - s.ply) / 2));
-//                          struct move m = idnegamax(&s, t, 0);
-//                          logmsg("value %d at time %d depth %d for %s\n\n",
-//                                  v0, t, d0, movestr(&m));
-//                          move(&s, &m, 0);
-//                          sendcmd(nf, "%s", movestr(&m));
-//                          printstate(&s, 1);
-//                          if (ponder)
-//                              (void) idnegamax(&s, 0, nf);
-                          continue;
+/*                          int t = readtimems(tl);
+                          t = 95 * t / (100 * ((81 - s.ply) / 2));
+                          struct move m = idnegamax(&s, t, 0);
+                          logmsg("value %d at time %d depth %d for %s\n\n",
+                                  v0, t, d0, movestr(&m));
+                          move(&s, &m, 0);
+                          sendcmd(nf, "%s", movestr(&m));
+                          printstate(&s, 1);
+                          if (ponder)
+                              (void) idnegamax(&s, 0, nf);
+*/                          continue;
                       }
             case '!':
                       assert(fgetc(nf) == '!');
-                      int ch;
+                      int ch,z;
                       do
                           ch = fgetc(nf);
                       while (isspace(ch));
                       ungetc(ch, nf);
                       char move[5];
-                      fscanf(nf,"%s",move);
+                      z=fscanf(nf,"%s",move); if(z) ;//did to get rid of warnings
                       Opp_Move(move);
                       propawn =Promotions(propawn);
 //                      struct move m = getmove(nf, &s);
@@ -287,6 +298,10 @@ void Novice::imcsplay(int argc, char **argv) {
     fclose(nf);
 }
 
+/*                    MY CLASS IMPLEMENTATIONS                        */
+
+//Method converts string of characters into coortinates to be stored
+//in a Move object
 void Novice::Create_M(char move[])
 {
      Move me;
@@ -296,6 +311,9 @@ void Novice::Create_M(char move[])
     me.to.x = (54 - (int)move[4]);
     Server_Dis(me);
 }
+
+//function turns string to move for opponent & passes move off to be added 
+//to the board
 void Novice::Opp_Move(char move[])
 {
     Move theirs;
@@ -304,9 +322,10 @@ void Novice::Opp_Move(char move[])
     theirs.to.y = (move[3] - 'a');
     theirs.to.x = (54 - (int)move[4]);
     Make_Move(theirs);
-//    Server_Dis(theirs);
 }
 
+//method makes my implementation play with a sorted move list which randomly
+//selects a choice from possible moves
 char* Novice::Priority()//modifyed to produce random play
 {
     bool queen=false;
@@ -326,26 +345,29 @@ char* Novice::Priority()//modifyed to produce random play
     return str;
 }
 
+//method for implementing the Negamax function with & without alpha beta pruning
 char * Novice::Go()
 {  
-    char* temp; bool queen=false;
+    char* temp =NULL; bool queen=false;
     int cost=0, list_index=0, list_max=0, this_player = player;
     int depth=DEPTH;
     Display_Board();
     list = Generate_Moves(this_player,list_index,list_max);
-    move_index =0;
-    cost = NegaMax(this_player,depth);
+//    Display_Moves(list,list_max);
+//    move_index =0;
+    cost = NegaMax(this_player,depth); if(cost) ;
     temp =  list[move_index].Make_string();
     Make_Move(list[move_index]);
     queen = Promotions(queen);
-    Display_Board();
+//    Display_Board();
     delete [] list;
     list=NULL;
     ++turn_count;
     return temp;
 }
 
-
+//NegaMax implemented WITHOUT Alpha Beta Pruning -- 90%+ completed NEEDS
+//MORE TESTING
 int Novice::NegaMax(int this_player,int depth)
 { 
     //if players king is gone or depth is reached: ->return board value
@@ -380,6 +402,8 @@ int Novice::NegaMax(int this_player,int depth)
     return val_p;
 }
 
+//NegaMax WITH Alpha Beta Pruning... i had to bail on this as time was running
+//out and I had to figure out what was going wrong... NEEDS MORE TESTING
 int Novice::AB_NegaMax(int this_player,int depth,int alpha,int beta)
 {
     //has no king on board or depth is 0 
@@ -390,7 +414,6 @@ int Novice::AB_NegaMax(int this_player,int depth,int alpha,int beta)
     Move * the_list = Generate_Moves(this_player,list_index,list_max);
     //no moves 
     if(!the_list) return Board_Eval(this_player);
-    //new board
     //Make a move
     Make_Move(the_list[0]);
     queen = Promotions(queen);
@@ -442,16 +465,4 @@ int Novice::AB_NegaMax(int this_player,int depth,int alpha,int beta)
     if(depth == DEPTH) move_index = hold_val;//sets class move index to make move.
     return max_val;
 }
-/*
-void Novice::Display_Board(char**& the_board)
-{
-    for(int i=0; i<ROW; ++i)
-    {
-        for(int j=0; j<COL-1;++j)
-            cout<<the_board[i][j];
-        cout<<'\n';
-    }
-    cout<<'\n';
-}
-*/
 

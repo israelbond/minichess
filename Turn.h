@@ -1,3 +1,10 @@
+/*Israel Bond
+ * MiniChess player
+ * CS442
+ 
+ File contains class declarations for: Move, Turn & Player. ALL data is public
+ I know this is very BAD practices but I was trying to just get it working and 
+ worry about syntactic sugar later!*/
 #include <stdio.h>
 #include <iostream>
 #include <cstring>
@@ -12,23 +19,19 @@ const int COL = 6;
 const int MOVES = 52; // Maximum moves for ALL Pieces 
 const int MAX_P = 7;
 
-//Class can be used as LLL.... maybe
 class Move // : public Turn
 {
     public:
         Move();
 
         void S_Move(Point&,Point&,int&,char&);
-//        void Insert();
         char* Make_string();
-//    protected:
         int value;
         char type;
-        
+        void Display_M();
         Point to;
         Point from;
         char word[5];
-//        Move * next;
 };
 
 class Turn
@@ -49,25 +52,19 @@ class Turn
         void Set_Piece_List(void);
         int Peice_Value(char&);
         bool Opponent(char,char);
-//        void Moved(char**&,Move);
         void Unmove(bool &,Move&);
-//        char** Copy_Board(char**&);
-//        void Remove_Board(char**&);
         void Change_player(void);
         void Display_Vars(void);                
         void Display_Board();
         void Remove_List(Move*&); 
         void Server_Dis(Move);
-//    protected:
 
         char playing;
         char** board;
         int player;
         int turn_count; 
-//        Move piece;
         Peice pieces[MAX_P];
         Move * list;//list[MOVES];
-//        int * check;
 };
 
 class Player : public Turn
@@ -93,6 +90,5 @@ class Player : public Turn
     bool Promotions(bool&);
 
     bool propawn;
-//    void Display_Board(char**&);
 };
 

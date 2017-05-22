@@ -1,33 +1,39 @@
-#include "Peices.h"
+/*Israel Bond
+ * MiniChess player
+ * CS442
 
+    This file contains the implementations for base classes which define a 
+    location in courtesan coordinates. these objects are used for creating 
+    peice locations, dimensions of peices, and board locations.*/
+
+#include "Peices.h"
+//Point class contructors/deconstructors
 Point::Point() : x{0}, y{0}/*,word{'\0'}*/ {}
 Point::Point(int nx, int ny) : x{nx}, y{ny} {}
 Point::~Point(){}
 
+//Sets the values of a point to the vars passed in 
 void Point::Set_Point(int nx, int ny)
 {
     this->x = nx;
     this->y = ny;
 }
 
+//function which displays the 2 points in a chess board position format " a2 "
 void Point::Show()
 {
    cout<<(char)(y + 'a')<<(int)(6-x);
-/*    int d1 = (6 - this->from.x);
-    char c2 = (char)(this->to.y + 'a');
-    int d2 = (6 - this->to.x);
-    sprintf(word, "%c%d-%c%d" ,c1 ,d1 ,c2 ,d2);
-*/  
-    
 }
 
-Peice::Peice():/* type{'\0'},*/ score{0}
+//constructor for Pieces **YES I KNOW ITS MISS SPELLED** intentional!
+Peice::Peice():  score{0}
 {
     int n =0;//used to set peice 2d array dimensions
     shape = NULL;
-    dim.Set_Point(n,n);
+    dim.Set_Point(n,n);//Point object
 }
 
+//Deconstructor for peices
 Peice::~Peice()
 {
     if(shape)
@@ -40,7 +46,13 @@ Peice::~Peice()
         shape = NULL;
     }
 }
-
+/*                          PIECE SETTING FUNCTIONS                         
+ *  The next 7 methods create dynamically allocated arrays which store the 
+ *  particulars on the possible moves that piece can perfom. Each function
+ *  manually sets all variables.  
+ *          NOTE!!
+ *          all type variables have been commented out as they seemed redundant 
+ *          once i reached a certin point in programming this assignment*/
 
 void Peice::S_B_Pawn()
 {
@@ -78,7 +90,7 @@ void Peice::S_King()
     score = 50;
       shape = new Point*[dim.x];
     for(int i=0; i<dim.x;++i) shape[i] = new Point[dim.y];
-
+    //ALL MOVES AND ATTACKS
   shape[0][0].Set_Point(0,-1);    shape[0][1].Set_Point(-1,-1);
     shape[0][2].Set_Point(-1,0);    shape[0][3].Set_Point(-1,1);
 
@@ -95,7 +107,7 @@ void Peice::S_Queen()
        shape = new Point*[dim.x];
     for(int i=0; i<dim.x;++i) shape[i] = new Point[dim.y];
 
- //NORTH    
+    //NORTH    
     shape[0][0].Set_Point(-1,0);    shape[0][1].Set_Point(-2,0);
     shape[0][2].Set_Point(-3,0);    shape[0][3].Set_Point(-4,0);
     shape[0][4].Set_Point(-5,0);    
@@ -170,7 +182,7 @@ void Peice::S_Knight()
      shape = new Point*[dim.x];
     for(int i=0; i<dim.x;++i) shape[i] = new Point[dim.y];
 
-   //Moves **special**
+   // **special** ALL ATTACKS AND MOVES
     shape[0][0].Set_Point(-2,1);    shape[0][1].Set_Point(-2,-1);
     shape[0][2].Set_Point(-1,-2);    shape[0][3].Set_Point(-1,2);
     
@@ -186,7 +198,7 @@ void Peice::S_Bishop()
       shape = new Point*[dim.x];
     for(int i=0; i<dim.x;++i) shape[i] = new Point[dim.y];
 
-  //NSEW **special**
+  //NSEW MOVES **special**
     shape[0][0].Set_Point(-1,0);     shape[0][1].Set_Point(1,0);
     shape[0][2].Set_Point(0,-1);    shape[0][3].Set_Point(0,1);
  

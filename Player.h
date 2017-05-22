@@ -1,3 +1,10 @@
+/*Israel Bond
+ * MiniChess player
+ * CS442
+ 
+ File conatins move of the library files to be included as well as class 
+ declarations for server class: NetProto and Novice class which is derived from
+ the Player class*/
 #include "Turn.h"
 #include <assert.h>
 #include <netdb.h>
