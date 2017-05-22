@@ -671,12 +671,16 @@ void Player::Move_Bishop(Move*& list,int& list_index,int& xpos, int& ypos,Peice 
                     therey >=0 && therey < COL -1)
             {
                 //**special** Bishop moves
-                if(i == 0 && board[therex][therey] == '.')
+                if(i == 0)
                 {
-                    to_there.Set_Point(therex,therey);
-                    peicev = Peice_Value(board[therex][therey]);
-                    list[list_index].S_Move(to_there,from_here, peicev, board[therex][therey]);
-                    ++list_index;
+                    if(board[therex][therey] == '.')
+                    {
+            
+                        to_there.Set_Point(therex,therey);
+                        peicev = Peice_Value(board[therex][therey]);
+                        list[list_index].S_Move(to_there,from_here, peicev, board[therex][therey]);
+                        ++list_index;
+                    }
 
                 }//move for Bishop 
                 else if( board[therex][therey] == '.' )

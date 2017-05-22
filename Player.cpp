@@ -349,13 +349,13 @@ char* Novice::Priority()//modifyed to produce random play
 char * Novice::Go()
 {  
     char* temp =NULL; bool queen=false;
-    int cost=0, list_index=0, list_max=0, this_player = player;
+    int cost=0, a=-100,b=100,list_index=0, list_max=0, this_player = player;
     int depth=DEPTH;
     Display_Board();
     list = Generate_Moves(this_player,list_index,list_max);
 //    Display_Moves(list,list_max);
 //    move_index =0;
-    cost = NegaMax(this_player,depth); if(cost) ;
+    cost = AB_NegaMax(this_player,depth,a,b);//NegaMax(this_player,depth); if(cost) ;
     temp =  list[move_index].Make_string();
     Make_Move(list[move_index]);
     queen = Promotions(queen);
@@ -389,6 +389,7 @@ int Novice::NegaMax(int this_player,int depth)
         Make_Move(the_list[i]);
         queen = Promotions(queen);
         val = -(NegaMax( - this_player,depth - 1));
+        queen =false;
         Unmove(queen,the_list[i]);
         if(val_p<val)
         {
@@ -409,9 +410,9 @@ int Novice::AB_NegaMax(int this_player,int depth,int alpha,int beta)
     //has no king on board or depth is 0 
     if(depth == 0 || Game_Over(this_player)) return Board_Eval(this_player); 
     bool queen = false;//used to validate promotions
-    int movei=0, hold_val=0,list_max=0,list_index=0,val=-1,max_val=-1;
+    int  i=0, hold_val=0,maxi=0,val=-1,max_val=-1;
     //legal moves
-    Move * the_list = Generate_Moves(this_player,list_index,list_max);
+    Move * the_list = Generate_Moves(this_player,i,maxi);
     //no moves 
     if(!the_list) return Board_Eval(this_player);
     //Make a move
@@ -419,9 +420,11 @@ int Novice::AB_NegaMax(int this_player,int depth,int alpha,int beta)
     queen = Promotions(queen);
     //recursive call
     max_val = -(AB_NegaMax(-this_player,depth-1, -beta, -alpha));
-    //unmake move & **CHECK IF PROMOTED**
+    //unmake move
     Unmove(queen,the_list[0]);
-    
+    //reset queen variable
+    queen = false;
+    i=1;
        if(max_val > beta) 
        {
        delete [] the_list;
@@ -431,22 +434,21 @@ int Novice::AB_NegaMax(int this_player,int depth,int alpha,int beta)
        }
        alpha = max(alpha,max_val);//ABP
        
-    for(int i=1; i<list_max;++i)
+    for(; i<maxi;++i)
     {
         //make move
         Make_Move(the_list[i]);
-        ++movei;
         queen = Promotions(queen);
         //recursive call
         val = -(AB_NegaMax(-this_player,depth-1, -beta, -alpha));
         //unmake move
         Unmove(queen,the_list[i]);
-        
+        queen= false;
            if(val >= beta)//ABP   
            {
            delete [] the_list;
            the_list = NULL;
-           if(depth == DEPTH) move_index = movei;
+           if(depth == DEPTH) move_index = i;
            return val;
            }
                    
@@ -455,10 +457,10 @@ int Novice::AB_NegaMax(int this_player,int depth,int alpha,int beta)
         {
             max_val = val;
             if(depth == DEPTH)
-                hold_val = movei;
+                hold_val = i;
         }
-//        max_val = max(max_val,val);
-        //        alpha = max(alpha,val);
+        max_val = max(max_val,val);
+                alpha = max(alpha,val);
     }
     delete [] the_list;
     the_list = NULL;

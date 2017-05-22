@@ -18,7 +18,7 @@
 #include <cctype>
 #include <time.h>
 #include <unistd.h>
-const int DEPTH = 6;
+const int DEPTH = 8;
 class NetProto
 {
     public: 
