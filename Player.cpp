@@ -1,7 +1,7 @@
 /*Israel Bond
  * MiniChess player
  * CS442
- 
+
  This file contains the class methods used to interact with the server and 
  derived class for player manipulations. the server code is that which was 
  provided to us by the professor and is mostly written in the C programming 
@@ -238,14 +238,14 @@ void Novice::imcsplay(int argc, char **argv) {
         int ch = fgetc(nf);
         int r = ungetc(ch, nf);
         assert(r != EOF);
-/*              if (isdigit(ch)) {
-                    s = readstate(nf, 1);
-                    s.cureval = eval(&s);
-                    if (nttable > 0)
+        /*              if (isdigit(ch)) {
+                        s = readstate(nf, 1);
+                        s.cureval = eval(&s);
+                        if (nttable > 0)
                         s.curzhash = zhash(&s);
-                    continue;
-                }
-*/
+                        continue;
+                        }
+                        */
         switch (ch) {
             case '?': {
                           char *r = plug.getnet(nf, (char*)"?");
@@ -255,19 +255,19 @@ void Novice::imcsplay(int argc, char **argv) {
                           char *tr = strtok(0, " ");
                           assert(tl && tr);
                           char* mine = Go();//Priority();
-               //           Create_M(mine);
+                          //           Create_M(mine);
                           plug.sendcmd(nf,mine);
-/*                          int t = readtimems(tl);
-                          t = 95 * t / (100 * ((81 - s.ply) / 2));
-                          struct move m = idnegamax(&s, t, 0);
-                          logmsg("value %d at time %d depth %d for %s\n\n",
-                                  v0, t, d0, movestr(&m));
-                          move(&s, &m, 0);
-                          sendcmd(nf, "%s", movestr(&m));
-                          printstate(&s, 1);
-                          if (ponder)
-                              (void) idnegamax(&s, 0, nf);
-*/                          continue;
+                          /*                          int t = readtimems(tl);
+                                                      t = 95 * t / (100 * ((81 - s.ply) / 2));
+                                                      struct move m = idnegamax(&s, t, 0);
+                                                      logmsg("value %d at time %d depth %d for %s\n\n",
+                                                      v0, t, d0, movestr(&m));
+                                                      move(&s, &m, 0);
+                                                      sendcmd(nf, "%s", movestr(&m));
+                                                      printstate(&s, 1);
+                                                      if (ponder)
+                                                      (void) idnegamax(&s, 0, nf);
+                                                      */                          continue;
                       }
             case '!':
                       assert(fgetc(nf) == '!');
@@ -280,8 +280,8 @@ void Novice::imcsplay(int argc, char **argv) {
                       z=fscanf(nf,"%s",move); if(z) ;//did to get rid of warnings
                       Opp_Move(move);
                       propawn =Promotions(propawn);
-//                      struct move m = getmove(nf, &s);
-//                      move(&s, &m, 0);
+                      //                      struct move m = getmove(nf, &s);
+                      //                      move(&s, &m, 0);
                       continue;
             case '=':
                       (void) plug.getnet(nf, (char*)"=");
@@ -304,7 +304,7 @@ void Novice::imcsplay(int argc, char **argv) {
 //in a Move object
 void Novice::Create_M(char move[])
 {
-     Move me;
+    Move me;
     me.from.y = (move[0] - 'a');   
     me.from.x = (54 - (int)move[1]); 
     me.to.y = (move[3] - 'a');
@@ -336,7 +336,7 @@ char* Novice::Priority()//modifyed to produce random play
     list_index = rand() % list_max;
     Make_Move(list[list_index]);//makes single move worth the most points
     queen = Promotions(queen);
-//    if(queen) cout<<"PROMOTED!"<<endl;
+    //    if(queen) cout<<"PROMOTED!"<<endl;
     char * str = list[list_index].Make_string();
     //    cout<<str<<endl;
     delete [] list;
@@ -345,21 +345,57 @@ char* Novice::Priority()//modifyed to produce random play
     return str;
 }
 
+void Novice::Nega_VS_ABP()
+{
+    char* abp =NULL, * nega =NULL;
+    int abp_cost=0, nega_cost=0, a=-100,b=100,list_index=0, list_max=0, this_player = player;
+    int depth=DEPTH;
+    //ABP
+    Display_Board();
+    list = Generate_Moves(this_player,list_index,list_max);
+    //    Display_Moves(list,list_max);
+    //   cout<<list_index<<" "<< list_max<<endl;
+    abp_cost = AB_NegaMax(this_player,depth,a,b);//NegaMax(this_player,depth); if(cost) ;
+    if(list)
+    {
+        list[move_index].Display_M();//.Make_string();
+        cout<<endl;
+        cout<<" "<<move_index<<endl;
+    }
+    move_index =0;
+    cout<<endl;
+    nega_cost = NegaMax(this_player,depth);
+    if(list)
+    {
+        list[move_index].Display_M();//.Make_string();
+        cout<<endl;
+        cout<<" "<<move_index<<endl;
+    }
+    //    fprintf(stdout, "NEGA: %s cost: %d\t ABP: %s cost: %d\n", nega,nega_cost,abp,abp_cost);
+
+    //    Make_Move(list[move_index]);
+    //    queen = Promotions(queen);
+    //    delete [] list;
+    //    list=NULL;
+    //    ++turn_count;
+    //    return temp;
+
+
+}
+
 //method for implementing the Negamax function with & without alpha beta pruning
 char * Novice::Go()
 {  
     char* temp =NULL; bool queen=false;
-    int cost=0, a=-100,b=100,list_index=0, list_max=0, this_player = player;
+    // a & b set to the value the king is worth...
+    int cost=0, a=-1,b=1,list_index=0, list_max=0, this_player = player;
     int depth=DEPTH;
     Display_Board();
     list = Generate_Moves(this_player,list_index,list_max);
-//    Display_Moves(list,list_max);
-//    move_index =0;
     cost = AB_NegaMax(this_player,depth,a,b);//NegaMax(this_player,depth); if(cost) ;
     temp =  list[move_index].Make_string();
     Make_Move(list[move_index]);
     queen = Promotions(queen);
-//    Display_Board();
     delete [] list;
     list=NULL;
     ++turn_count;
@@ -385,22 +421,24 @@ int Novice::NegaMax(int this_player,int depth)
     queen =false;
     i=1;
     for(;i<maxi;++i)
+{
+    Make_Move(the_list[i]);
+    queen = Promotions(queen);
+    val = -(NegaMax( - this_player,depth - 1));
+    Unmove(queen,the_list[i]);
+    queen =false;
+    if(val_p<val)
     {
-        Make_Move(the_list[i]);
-        queen = Promotions(queen);
-        val = -(NegaMax( - this_player,depth - 1));
-        queen =false;
-        Unmove(queen,the_list[i]);
-        if(val_p<val)
-        {
-            val_p = val;
-            if(depth == DEPTH) holdi = i;
-        }
+        val_p = val;
+        if(depth == DEPTH) holdi = i;
     }
-    if(depth == DEPTH) move_index = holdi;
-    delete []the_list;
-    the_list = NULL;
-    return val_p;
+    else
+        val_p = max(val_p,val);
+}
+if(depth == DEPTH) move_index = holdi;
+delete []the_list;
+the_list = NULL;
+return val_p;
 }
 
 //NegaMax WITH Alpha Beta Pruning... i had to bail on this as time was running
@@ -425,15 +463,15 @@ int Novice::AB_NegaMax(int this_player,int depth,int alpha,int beta)
     //reset queen variable
     queen = false;
     i=1;
-       if(max_val > beta) 
-       {
-       delete [] the_list;
-       the_list = NULL;
-       if(depth == DEPTH)   move_index = 0;
-       return max_val;//ALPHA BETA PRUN
-       }
-       alpha = max(alpha,max_val);//ABP
-       
+    if(max_val > beta) 
+    {
+        delete [] the_list;
+        the_list = NULL;
+        if(depth == DEPTH)   move_index = 0;
+        return max_val;//ALPHA BETA PRUN
+    }
+    alpha = max(alpha,max_val);//ABP
+
     for(; i<maxi;++i)
     {
         //make move
@@ -444,14 +482,14 @@ int Novice::AB_NegaMax(int this_player,int depth,int alpha,int beta)
         //unmake move
         Unmove(queen,the_list[i]);
         queen= false;
-           if(val >= beta)//ABP   
-           {
-           delete [] the_list;
-           the_list = NULL;
-           if(depth == DEPTH) move_index = i;
-           return val;
-           }
-                   
+        if(val >= beta)//ABP   
+        {
+            delete [] the_list;
+            the_list = NULL;
+            if(depth == DEPTH) move_index = i;
+            return val;
+        }
+
         //if last move was better than first move 
         if(max_val < val)//get value for most current equivilant move
         {
@@ -459,8 +497,9 @@ int Novice::AB_NegaMax(int this_player,int depth,int alpha,int beta)
             if(depth == DEPTH)
                 hold_val = i;
         }
-        max_val = max(max_val,val);
-                alpha = max(alpha,val);
+        else
+            max_val = max(max_val,val);
+        alpha = max(alpha,val);
     }
     delete [] the_list;
     the_list = NULL;

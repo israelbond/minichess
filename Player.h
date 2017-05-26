@@ -8,10 +8,9 @@
 #include "Turn.h"
 #include <assert.h>
 #include <netdb.h>
-//#include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
-#include <string.h>
+//#include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <algorithm>
@@ -48,6 +47,7 @@ class Novice: public Player
         void imcsplay(int argc, char **argv);
         int AB_NegaMax(int,int,int,int);//ABP refereences could be BAD
         int NegaMax(int,int);
+        void Nega_VS_ABP();
 //        void Display_Board(char**&);
     protected:
         int move_index;

@@ -2,7 +2,7 @@
  * MiniChess player
  * CS442
  
- file contains class declarations for: POINT & PEICE */
+file contains class declarations for: POINT & PEICE */
 #include <cstdio>
 #include <stdio.h>
 #include <iostream>

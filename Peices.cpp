@@ -46,6 +46,7 @@ Peice::~Peice()
         shape = NULL;
     }
 }
+
 /*                          PIECE SETTING FUNCTIONS                         
  *  The next 7 methods create dynamically allocated arrays which store the 
  *  particulars on the possible moves that piece can perfom. Each function

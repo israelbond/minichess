@@ -37,15 +37,15 @@ void Move::Display_M()
     int d1 = (6 - this->from.x);
     char c2 = (char)(this->to.y + 'a');
     int d2 = (6 - this->to.x);
- //   fprintf(stdout,"%c%d-%c%d",c1,d1,c2,d2);
+    fprintf(stdout,"%c%d-%c%d",c1,d1,c2,d2);
 }
 
 //Base class constructor
 Turn::Turn(): board{NULL}, list{NULL}
 {
-       Starting_State();
+//       Starting_State();
     Set_Piece_List();
-//    Set_Turn();
+    Set_Turn();
 }
 
 //Base class destructor
@@ -107,7 +107,7 @@ void Turn::Starting_State()
     int i=0;
     turn_count = 1;
 
-//    player = -1; playing = 'B';
+    player = -1; playing = 'B';
     char temp[ROW][COL] = {{'k','q','b','n','r','\0'},
         {'p','p','p','p','p','\0'},
         {'.','.','.','.','.','\0'},
@@ -779,7 +779,7 @@ void Player::Move_King(Move*& list,int& list_index,int& xpos, int& ypos,Peice & 
                 else if(Opponent(board[xpos][ypos], board[therex][therey])== true)
                 {
                     to_there.Set_Point(therex,therey);
-                    peicev = 1000;//DANGER!! MUST TAKE PEICE!!!  --Peice_Value(board[therex][therey]);
+                    peicev = Peice_Value(board[therex][therey]);//DANGER!! MUST TAKE PEICE!!!  --Peice_Value(board[therex][therey]);
                     list[list_index].S_Move(to_there,from_here, peicev, board[therex][therey]);
                     ++list_index;
                     //                    break;

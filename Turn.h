@@ -5,13 +5,8 @@
  File contains class declarations for: Move, Turn & Player. ALL data is public
  I know this is very BAD practices but I was trying to just get it working and 
  worry about syntactic sugar later!*/
-#include <stdio.h>
-#include <iostream>
-#include <cstring>
-#include <string>
 #include "Peices.h"
 
-using namespace std;
 
 
 const int ROW = 6;
