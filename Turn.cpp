@@ -43,9 +43,9 @@ void Move::Display_M()
 //Base class constructor
 Turn::Turn(): board{NULL}, list{NULL}
 {
-//       Starting_State();
+       Starting_State();
     Set_Piece_List();
-    Set_Turn();
+//    Set_Turn();
 }
 
 //Base class destructor

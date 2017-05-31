@@ -254,6 +254,8 @@ void Novice::imcsplay(int argc, char **argv) {
                           char *tl = strtok(0, " ");
                           char *tr = strtok(0, " ");
                           assert(tl && tr);
+                          cout<<tl<<endl;
+//                          cout<<tr<<endl;
                           char* mine = Go();//Priority();
                           //           Create_M(mine);
                           plug.sendcmd(nf,mine);
@@ -336,9 +338,7 @@ char* Novice::Priority()//modifyed to produce random play
     list_index = rand() % list_max;
     Make_Move(list[list_index]);//makes single move worth the most points
     queen = Promotions(queen);
-    //    if(queen) cout<<"PROMOTED!"<<endl;
     char * str = list[list_index].Make_string();
-    //    cout<<str<<endl;
     delete [] list;
     list=NULL;
     ++turn_count;
@@ -347,7 +347,7 @@ char* Novice::Priority()//modifyed to produce random play
 
 void Novice::Nega_VS_ABP()
 {
-    char* abp =NULL, * nega =NULL;
+//    char* abp =NULL, * nega =NULL;
     int abp_cost=0, nega_cost=0, a=-100,b=100,list_index=0, list_max=0, this_player = player;
     int depth=DEPTH;
     //ABP
@@ -356,6 +356,7 @@ void Novice::Nega_VS_ABP()
     //    Display_Moves(list,list_max);
     //   cout<<list_index<<" "<< list_max<<endl;
     abp_cost = AB_NegaMax(this_player,depth,a,b);//NegaMax(this_player,depth); if(cost) ;
+    if(abp_cost) ;
     if(list)
     {
         list[move_index].Display_M();//.Make_string();
@@ -365,22 +366,13 @@ void Novice::Nega_VS_ABP()
     move_index =0;
     cout<<endl;
     nega_cost = NegaMax(this_player,depth);
+    if(nega_cost) ;
     if(list)
     {
         list[move_index].Display_M();//.Make_string();
         cout<<endl;
         cout<<" "<<move_index<<endl;
     }
-    //    fprintf(stdout, "NEGA: %s cost: %d\t ABP: %s cost: %d\n", nega,nega_cost,abp,abp_cost);
-
-    //    Make_Move(list[move_index]);
-    //    queen = Promotions(queen);
-    //    delete [] list;
-    //    list=NULL;
-    //    ++turn_count;
-    //    return temp;
-
-
 }
 
 //method for implementing the Negamax function with & without alpha beta pruning
@@ -393,9 +385,11 @@ char * Novice::Go()
     Display_Board();
     list = Generate_Moves(this_player,list_index,list_max);
     cost = AB_NegaMax(this_player,depth,a,b);//NegaMax(this_player,depth); if(cost) ;
+    if(cost) ;
     temp =  list[move_index].Make_string();
     Make_Move(list[move_index]);
     queen = Promotions(queen);
+    queen = false;
     delete [] list;
     list=NULL;
     ++turn_count;
@@ -441,8 +435,8 @@ the_list = NULL;
 return val_p;
 }
 
-//NegaMax WITH Alpha Beta Pruning... i had to bail on this as time was running
-//out and I had to figure out what was going wrong... NEEDS MORE TESTING
+//NegaMax WITH Alpha Beta Pruning to a specific depth where an index is set to 
+//the best first move to make. Returns the score for the move!
 int Novice::AB_NegaMax(int this_player,int depth,int alpha,int beta)
 {
     //has no king on board or depth is 0 
@@ -499,11 +493,76 @@ int Novice::AB_NegaMax(int this_player,int depth,int alpha,int beta)
         }
         else
             max_val = max(max_val,val);
-        alpha = max(alpha,val);
+         alpha = max(alpha,val);
     }
     delete [] the_list;
     the_list = NULL;
     if(depth == DEPTH) move_index = hold_val;//sets class move index to make move.
     return max_val;
 }
+//kick starts the Iteritive Deepening process making calls to a special 
+//negamax function which only evaluates the instance where a FLAG is true,
+//setting the index for the approperiate first move.
+int Novice::Iteritive_Deepening(int & i_to_hold/*char * my_time*/)
+{
+    bool flag=true; 
+    int depth=1, i_to_set=0, alpha=-100, beta=100, 
+        score_p=0, score=0, this_player = player;
+    clock_t begin=clock(), end;
+    end = begin;
+    score = ID_AB_NegaMax(this_player,depth,i_to_hold,flag,alpha,beta);
+    depth = 2;
+    while(depth < DRAW_D)// DRAW_D = 40
+    {
+        end = clock();
+        score_p = ID_AB_NegaMax(this_player,depth,i_to_set,flag,alpha,beta);
+        //IF CONTITIONAL FOR CHECKING IF IM OUT OF TIME FOR ANOTHER RUN...
+        if(turn_count < 25)
+        {
+            if((end/CLOCKS_PER_SEC - begin/CLOCKS_PER_SEC) >= T_MIN)// 7 
+            {
+              //make move
+              move_index =i_to_hold;
+              return score;
+            }
+        }
+        else//turn_count >= 25: only 15 more moves to be made on the board
+        {//justified more time for time alloted for search
+            if((end/CLOCKS_PER_SEC - begin/CLOCKS_PER_SEC) >= T_MAX)// 10
+            {
+              //make move
+              move_index = i_to_hold;
+              return score;
+            }
+        }
+        //otherwise perform other checks
+        if(score_p <= -100)//
+        {
+           //make move from score
+           move_index = i_to_hold;
+           return score;
+        }
+        if(score >= 100)
+        {
+            //make move from score
+           move_index = i_to_hold;
+           return score;
+        }
+        //otherwise holding move index gets set to current running index
+        i_to_hold = i_to_set;
+        score = score_p;
+        //incremental step for loop
+        ++depth;
+    }
+    //otherwise the last iterations MOVE is used!...Depth=40!...
+    return score_p;  
+    
+//turn char * into time value...
+//    fprintf(stdout,"%s",my_time);
 
+}
+
+int Novice::ID_AB_NegaMax(int this_player,int depth,int i_to_set,bool flag,int alpha, int beta)
+{
+    return 0;
+}

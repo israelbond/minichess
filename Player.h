@@ -10,7 +10,6 @@
 #include <netdb.h>
 #include <stdarg.h>
 #include <stdlib.h>
-//#include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <algorithm>
@@ -18,6 +17,10 @@
 #include <time.h>
 #include <unistd.h>
 const int DEPTH = 8;
+const int DRAW_D = 40;
+const int T_MIN = 7;
+const int T_MAX = 10;
+
 class NetProto
 {
     public: 
@@ -41,11 +44,12 @@ class Novice: public Player
 
         char* Priority();
         char* Go();
-
+        int ID_AB_NegaMax(int, int, int, bool,int,int);
+        int Iteritive_Deepening(int&);
         void Create_M(char move[]);
         void Opp_Move(char[]);
         void imcsplay(int argc, char **argv);
-        int AB_NegaMax(int,int,int,int);//ABP refereences could be BAD
+        int AB_NegaMax(int,int,int,int);//ABP int refereences WERE BAD!!
         int NegaMax(int,int);
         void Nega_VS_ABP();
 //        void Display_Board(char**&);

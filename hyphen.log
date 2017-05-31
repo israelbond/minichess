@@ -1,0 +1,139 @@
+100 imcs 2.5
+me hyphen 1brother
+201 hello hyphen
+accept 17317 B
+106 B 5:00 5:00 game starts
+
+
+1 B
+kqbnr
+ppppp
+.....
+..N..
+PPPPP
+R.BQK
+
+? 05:00.000 05:00.000
+b5-b4
+
+
+2 B
+kqbnr
+p.ppp
+.p...
+.....
+PPPPP
+RNBQK
+
+? 04:59.623 04:59.782
+a6-b5
+
+
+3 B
+.qbnr
+pkppp
+.p...
+....P
+PPPP.
+RNBQK
+
+? 04:59.099 04:59.537
+b6-a6
+
+
+4 B
+q.bnr
+pkppp
+.p...
+....P
+PPPPQ
+RNB.K
+
+? 04:58.591 04:59.283
+d6-c4
+
+
+5 B
+q.b.r
+pkppp
+.pn..
+.P..P
+P.PPQ
+RNB.K
+
+? 04:58.516 04:58.669
+a5-a4
+
+
+6 B
+q.b.r
+.kppp
+ppn..
+.P..P
+PBPPQ
+RN..K
+
+? 04:58.485 04:58.072
+a4-b3
+
+
+7 B
+q.b.r
+.kppp
+.pn..
+.P..P
+.BPPQ
+RN..K
+
+? 04:58.359 04:57.587
+a6-b6
+
+
+8 B
+.qb.r
+.kppp
+.pn..
+.P..P
+B.PPQ
+RN..K
+
+? 04:58.334 04:56.722
+d5-d4
+
+
+9 B
+.qb.r
+.kp.p
+.pQp.
+.P..P
+B.PP.
+RN..K
+
+? 04:58.243 04:56.600
+b5-a5
+
+
+10 B
+.qb.r
+k.p.p
+.pQp.
+.P..P
+.BPP.
+RN..K
+
+? 04:58.240 04:54.858
+c6-a4
+
+
+11 B
+.q..r
+k.p.p
+RpQp.
+.P..P
+.BPP.
+.N..K
+
+? 04:58.197 04:54.786
+a5-a4
+
+= W wins
