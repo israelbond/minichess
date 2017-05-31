@@ -13,9 +13,9 @@ int main(int argc, char** argv)
 //    game.Go();
 //    game.Priority();
 //    game.Nega_VS_ABP();
-//    game.imcsplay(argc,argv);
-//    game.Iteritive_Deepening
+    game.imcsplay(argc,argv);
 
+/*
     clock_t t1,t2;
     t1=clock();
     t2=t1;
@@ -23,6 +23,7 @@ int main(int argc, char** argv)
         t2=clock();
     printf("Took %ld ticks to wait one second.\n",t2-t1);
     printf("this value should be the same as CLOCKS_PER_SEC which is %ld.\n",CLOCKS_PER_SEC);
+    */
     return 0;
 }
 

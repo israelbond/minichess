@@ -255,8 +255,8 @@ void Novice::imcsplay(int argc, char **argv) {
                           char *tr = strtok(0, " ");
                           assert(tl && tr);
                           cout<<tl<<endl;
-//                          cout<<tr<<endl;
-                          char* mine = Go();//Priority();
+                          //                          cout<<tr<<endl;
+                          char* mine = ID_Wrapper();//Go();//Priority();
                           //           Create_M(mine);
                           plug.sendcmd(nf,mine);
                           /*                          int t = readtimems(tl);
@@ -347,7 +347,7 @@ char* Novice::Priority()//modifyed to produce random play
 
 void Novice::Nega_VS_ABP()
 {
-//    char* abp =NULL, * nega =NULL;
+    //    char* abp =NULL, * nega =NULL;
     int abp_cost=0, nega_cost=0, a=-100,b=100,list_index=0, list_max=0, this_player = player;
     int depth=DEPTH;
     //ABP
@@ -493,7 +493,7 @@ int Novice::AB_NegaMax(int this_player,int depth,int alpha,int beta)
         }
         else
             max_val = max(max_val,val);
-         alpha = max(alpha,val);
+        alpha = max(alpha,val);
     }
     delete [] the_list;
     the_list = NULL;
@@ -503,50 +503,75 @@ int Novice::AB_NegaMax(int this_player,int depth,int alpha,int beta)
 //kick starts the Iteritive Deepening process making calls to a special 
 //negamax function which only evaluates the instance where a FLAG is true,
 //setting the index for the approperiate first move.
-int Novice::Iteritive_Deepening(int & i_to_hold/*char * my_time*/)
+
+char* Novice::ID_Wrapper()
 {
-    bool flag=true; 
+    bool queen=false;
+    char * temp=NULL;
+    int move_i=0,list_i=0, list_m=0, my_score=0;
+    //generate sorted first move list
+    list = Generate_Moves(player,list_i,list_m);
+    Display_Board();
+    //kick start Iterative Deepening!
+    my_score = Iterative_Deepening(move_i);
+    if(my_score) ;
+    temp =  list[move_index].Make_string();
+    Make_Move(list[move_index]);
+    queen = Promotions(queen);
+    queen = false;
+    delete [] list;
+    list=NULL;
+    ++turn_count;
+    return temp;
+}
+
+int Novice::Iterative_Deepening(int & i_to_hold/*char * my_time*/)
+{
+    //    bool flag=true; 
     int depth=1, i_to_set=0, alpha=-100, beta=100, 
         score_p=0, score=0, this_player = player;
-    clock_t begin=clock(), end;
+    //class variables to control time spent on move search
+    begin=clock();
     end = begin;
-    score = ID_AB_NegaMax(this_player,depth,i_to_hold,flag,alpha,beta);
+    score = ID_AB_NegaMax(this_player,depth,i_to_hold,true/*flag*/,alpha,beta);
     depth = 2;
     while(depth < DRAW_D)// DRAW_D = 40
     {
+        //        end = clock();
+        score_p = ID_AB_NegaMax(this_player,depth,i_to_set,true/*flag*/,alpha,beta);
+
         end = clock();
-        score_p = ID_AB_NegaMax(this_player,depth,i_to_set,flag,alpha,beta);
         //IF CONTITIONAL FOR CHECKING IF IM OUT OF TIME FOR ANOTHER RUN...
-        if(turn_count < 25)
+        if(turn_count <= QUICK_TURN)
         {
-            if((end/CLOCKS_PER_SEC - begin/CLOCKS_PER_SEC) >= T_MIN)// 7 
+            if((end/CLOCKS_PER_SEC - begin/CLOCKS_PER_SEC) >= T_MIN)
             {
-              //make move
-              move_index =i_to_hold;
-              return score;
+                //make move
+                move_index =i_to_hold;
+                return score;
             }
         }
         else//turn_count >= 25: only 15 more moves to be made on the board
         {//justified more time for time alloted for search
-            if((end/CLOCKS_PER_SEC - begin/CLOCKS_PER_SEC) >= T_MAX)// 10
+            if((end/CLOCKS_PER_SEC - begin/CLOCKS_PER_SEC) >= T_MAX)
             {
-              //make move
-              move_index = i_to_hold;
-              return score;
+                //make move
+                move_index = i_to_hold;
+                return score;
             }
         }
         //otherwise perform other checks
         if(score_p <= -100)//
         {
-           //make move from score
-           move_index = i_to_hold;
-           return score;
+            //make move from score
+            move_index = i_to_hold;
+            return score;
         }
         if(score >= 100)
         {
             //make move from score
-           move_index = i_to_hold;
-           return score;
+            move_index = i_to_hold;
+            return score;
         }
         //otherwise holding move index gets set to current running index
         i_to_hold = i_to_set;
@@ -555,14 +580,140 @@ int Novice::Iteritive_Deepening(int & i_to_hold/*char * my_time*/)
         ++depth;
     }
     //otherwise the last iterations MOVE is used!...Depth=40!...
-    return score_p;  
-    
-//turn char * into time value...
-//    fprintf(stdout,"%s",my_time);
-
+    return score;      
 }
 
-int Novice::ID_AB_NegaMax(int this_player,int depth,int i_to_set,bool flag,int alpha, int beta)
+int Novice::ID_AB_NegaMax(int this_player,int depth,int& i_to_set,bool flag,int alpha, int beta)
 {
-    return 0;
+    //has no king on board or depth is 0 
+    if(depth == 0 || Game_Over(this_player)) return Board_Eval(this_player); 
+    bool queen = false;//used to validate promotions
+    int  i=0, hold_val=0,maxi=0,val=-1,max_val=-1;
+    //legal moves
+    Move * the_list = Generate_Moves(this_player,i,maxi);
+    //no moves 
+    if(!the_list) return Board_Eval(this_player);
+    //Make a move
+    Make_Move(the_list[0]);
+    queen = Promotions(queen);
+    //recursive call
+    max_val = -(ID_AB_NegaMax(-this_player,depth-1,i_to_set, false, -beta, -alpha));
+
+    end = clock();
+    //unmake move
+    Unmove(queen,the_list[0]);
+    //reset queen variable
+    queen = false;
+    i=1;
+    //IF CONTITIONAL FOR CHECKING IF IM OUT OF TIME FOR ANOTHER RUN...
+    if(turn_count < QUICK_TURN)
+    {
+        if((end/CLOCKS_PER_SEC - begin/CLOCKS_PER_SEC) >= T_MIN)// 7 seconds
+        {
+            delete [] the_list;
+            the_list = NULL;
+            if(flag/*depth == DEPTH*/)   i_to_set = 0; //move_index = 0;
+            return max_val;//ALPHA BETA PRUN
+        }
+    }
+    else//turn_count >= 25: only 15 more moves to be made on the board
+    {//justified more time for time alloted for search
+        if((end/CLOCKS_PER_SEC - begin/CLOCKS_PER_SEC) >= T_MAX)// 10 seconds
+        {
+            delete [] the_list;
+            the_list = NULL;
+            if(flag/*depth == DEPTH*/)   i_to_set = 0; //move_index = 0;
+            return max_val;//ALPHA BETA PRUN
+        }
+    }
+    if(max_val > beta) 
+    {
+        delete [] the_list;
+        the_list = NULL;
+        if(flag/*depth == DEPTH*/)   i_to_set = 0; //move_index = 0;
+        return max_val;//ALPHA BETA PRUN
+    }
+    alpha = max(alpha,max_val);//ABP
+
+    for(; i<maxi;++i)
+    {
+        //make move
+        Make_Move(the_list[i]);
+        queen = Promotions(queen);
+        //recursive call
+        val = -(ID_AB_NegaMax(-this_player,depth-1, i_to_set, false, -beta, -alpha));
+        end = clock();
+        //unmake move
+        Unmove(queen,the_list[i]);
+        queen= false;
+        //IF CONTITIONAL FOR CHECKING IF IM OUT OF TIME FOR ANOTHER RUN...
+        if(turn_count < QUICK_TURN)
+        {
+            if((end/CLOCKS_PER_SEC - begin/CLOCKS_PER_SEC) >= T_MIN)// 7 seconds
+            {
+                if(val >= beta)//ABP   
+                {
+                    delete [] the_list;
+                    the_list = NULL;
+                    if(flag/*depth == DEPTH*/)  i_to_set = i; //move_index = i;
+                    return val;
+                }
+                //if last move was better than first move 
+                if(max_val < val)//get value for most current equivilant move
+                {
+                    delete [] the_list;
+                    the_list = NULL;
+                    max_val = val;
+                    if(flag/*depth == DEPTH*/)  i_to_set = i;
+                    return max_val;//ALPHA BETA PRUN
+                }
+            }
+        }
+        else//turn_count >= 25: only 15 more moves to be made on the board
+        {//justified more time for time alloted for search
+            if((end/CLOCKS_PER_SEC - begin/CLOCKS_PER_SEC) >= T_MAX)// 10 seconds
+            {
+                if(val >= beta)//ABP   
+                {
+                    delete [] the_list;
+                    the_list = NULL;
+                    if(flag/*depth == DEPTH*/)  i_to_set = i; //move_index = i;
+                    return val;
+                }
+                //if last move was better than first move 
+                if(max_val < val)//get value for most current equivilant move
+                {
+                    delete [] the_list;
+                    the_list = NULL;
+                    max_val = val;
+                    if(flag/*depth == DEPTH*/)  i_to_set = i;
+                    return max_val;//ALPHA BETA PRUN
+
+                }
+            }
+
+        }
+        if(val >= beta)//ABP   
+        {
+            delete [] the_list;
+            the_list = NULL;
+            if(flag/*depth == DEPTH*/) i_to_set = i; //move_index = i;
+            return val;
+        }
+
+        //if last move was better than first move 
+        if(max_val < val)//get value for most current equivilant move
+        {
+            max_val = val;
+            if(flag/*depth == DEPTH*/)
+                hold_val = i;
+        }
+        else
+            max_val = max(max_val,val);
+        alpha = max(alpha,val);
+    }
+    delete [] the_list;
+    the_list = NULL;
+    if(flag/*depth == DEPTH*/) i_to_set = hold_val; //move_index = hold_val;//sets class move index to make move.
+    return max_val;
 }

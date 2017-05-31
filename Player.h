@@ -18,8 +18,9 @@
 #include <unistd.h>
 const int DEPTH = 8;
 const int DRAW_D = 40;
-const int T_MIN = 7;
+const int T_MIN = 5;
 const int T_MAX = 10;
+const int QUICK_TURN = 20;
 
 class NetProto
 {
@@ -44,8 +45,8 @@ class Novice: public Player
 
         char* Priority();
         char* Go();
-        int ID_AB_NegaMax(int, int, int, bool,int,int);
-        int Iteritive_Deepening(int&);
+        char* ID_Wrapper();
+        int Iterative_Deepening(int&);
         void Create_M(char move[]);
         void Opp_Move(char[]);
         void imcsplay(int argc, char **argv);
@@ -54,8 +55,10 @@ class Novice: public Player
         void Nega_VS_ABP();
 //        void Display_Board(char**&);
     protected:
+        clock_t begin, end;
         int move_index;
         NetProto plug;
+        int ID_AB_NegaMax(int, int, int&, bool,int,int);
 };
 
 
