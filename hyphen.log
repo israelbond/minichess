@@ -1,0 +1,486 @@
+100 imcs 2.5
+me hyphen 1brother
+201 hello hyphen
+accept 18082 B
+106 B 5:00 5:00 game starts
+
+
+1 B
+kqbnr
+ppppp
+.....
+..N..
+PPPPP
+R.BQK
+
+? 05:00.000 05:00.000
+b5-b4
+
+
+2 B
+kqbnr
+p.ppp
+.p...
+.....
+PPPPP
+RNBQK
+
+? 04:52.584 04:59.958
+a6-b5
+
+
+3 B
+.qbnr
+pkppp
+.p...
+....P
+PPPP.
+RNBQK
+
+? 04:46.583 04:59.917
+b6-a6
+
+
+4 B
+q.bnr
+pkppp
+.p...
+....P
+PPPPQ
+RNB.K
+
+? 04:40.581 04:59.875
+b5-b6
+
+
+5 B
+qkbnr
+p.ppp
+.p...
+....P
+PPPP.
+RNBQK
+
+? 04:34.580 04:59.833
+a6-b5
+
+
+6 B
+.kbnr
+pqppp
+.p...
+.P..P
+P.PP.
+RNBQK
+
+? 04:28.579 04:59.791
+b6-a6
+
+
+7 B
+k.bnr
+pqppp
+.p...
+.P..P
+PBPP.
+RN.QK
+
+? 04:22.578 04:59.749
+a6-b6
+
+
+8 B
+.kbnr
+pqppp
+.p...
+.P..P
+P.PP.
+RNBQK
+
+? 04:16.577 04:59.707
+b6-a6
+
+
+9 B
+k.bnr
+pqppp
+.p...
+.P..P
+PBPP.
+RN.QK
+
+? 04:10.575 04:59.666
+a6-b6
+
+
+10 B
+.kbnr
+pqppp
+.p...
+.P..P
+P.PP.
+RNBQK
+
+? 04:04.550 04:59.623
+b6-a6
+
+
+11 B
+k.bnr
+pqppp
+.p...
+.P..P
+PBPP.
+RN.QK
+
+? 03:58.428 04:59.582
+a6-b6
+
+
+12 B
+.kbnr
+pqppp
+.p...
+.P..P
+P.PP.
+RNBQK
+
+? 03:51.037 04:59.542
+b6-a6
+
+
+13 B
+k.bnr
+pqppp
+.p...
+.P..P
+PBPP.
+RN.QK
+
+? 03:45.033 04:59.498
+a6-b6
+
+
+14 B
+.kbnr
+pqppp
+.p...
+.P..P
+P.PP.
+RNBQK
+
+? 03:39.030 04:59.455
+b6-a6
+
+
+15 B
+k.bnr
+pqppp
+.p...
+.P..P
+PBPP.
+RN.QK
+
+? 03:32.992 04:59.414
+a6-b6
+
+
+16 B
+.kbnr
+pqppp
+.p...
+.P..P
+P.PP.
+RNBQK
+
+? 03:26.929 04:59.373
+b6-a6
+
+
+17 B
+k.bnr
+pqppp
+.p...
+.P..P
+PBPP.
+RN.QK
+
+? 03:20.926 04:59.329
+a6-b6
+
+
+18 B
+.kbnr
+pqppp
+.p...
+.P..P
+P.PP.
+RNBQK
+
+? 03:14.902 04:59.285
+b6-a6
+
+
+19 B
+k.bnr
+pqppp
+.p...
+.P..P
+PBPP.
+RN.QK
+
+? 03:08.887 04:59.241
+a6-b6
+
+
+20 B
+.kbnr
+pqppp
+.p...
+.P..P
+P.PP.
+RNBQK
+
+? 03:02.883 04:59.153
+b6-a6
+
+
+21 B
+k.bnr
+pqppp
+.p...
+.P..P
+PBPP.
+RN.QK
+
+? 02:51.160 04:59.153
+a6-b6
+
+
+22 B
+.kbnr
+pqppp
+.p...
+.P..P
+P.PP.
+RNBQK
+
+? 02:41.084 04:59.112
+b6-a6
+
+
+23 B
+k.bnr
+pqppp
+.p...
+.P..P
+PBPP.
+RN.QK
+
+? 02:30.704 04:59.068
+a6-b6
+
+
+24 B
+.kbnr
+pqppp
+.p...
+.P..P
+PBPP.
+RNQ.K
+
+? 02:20.338 04:59.026
+b6-a6
+
+
+25 B
+k.bnr
+pqppp
+.p...
+.P..P
+PBPP.
+RNQK.
+
+? 02:10.274 04:58.982
+a6-b6
+
+
+26 B
+.kbnr
+pqppp
+.p...
+.P..P
+PBPP.
+RNQ.K
+
+? 02:00.152 04:58.941
+b6-a6
+
+
+27 B
+k.bnr
+pqppp
+.p...
+.P..P
+PBPP.
+RN.QK
+
+? 01:48.903 04:58.898
+a6-b6
+
+
+28 B
+.kbnr
+pqppp
+.p...
+.P..P
+PBPP.
+RNQ.K
+
+? 01:38.797 04:58.858
+b6-a6
+
+
+29 B
+k.bnr
+pqppp
+.p...
+.P..P
+PBPP.
+RNQK.
+
+? 01:28.752 04:58.816
+a6-b6
+
+
+30 B
+.kbnr
+pqppp
+.p...
+.P..P
+PBPP.
+RNQ.K
+
+? 01:18.749 04:58.776
+b6-a6
+
+
+31 B
+k.bnr
+pqppp
+.p...
+.P..P
+PBPP.
+RNQK.
+
+? 01:08.747 04:58.736
+a6-b6
+
+
+32 B
+.kbnr
+pqppp
+.p...
+.P..P
+PBPP.
+RNQ.K
+
+? 01:00.480 04:58.695
+b6-a6
+
+
+33 B
+k.bnr
+pqppp
+.p...
+.P..P
+PBPP.
+RN.QK
+
+? 00:51.674 04:58.654
+a6-b6
+
+
+34 B
+.kbnr
+pqppp
+.p...
+.P..P
+P.PP.
+RNBQK
+
+? 00:51.020 04:58.614
+b6-a6
+
+
+35 B
+k.bnr
+pqppp
+.p...
+.P..P
+PBPP.
+RN.QK
+
+? 00:50.509 04:58.574
+a6-b6
+
+
+36 B
+.kbnr
+pqppp
+.p...
+.P..P
+P.PP.
+RNBQK
+
+? 00:50.462 04:58.534
+b6-a6
+
+
+37 B
+k.bnr
+pqppp
+.p...
+.P..P
+PBPP.
+RN.QK
+
+? 00:50.435 04:58.493
+a6-b6
+
+
+38 B
+.kbnr
+pqppp
+.p...
+.P..P
+P.PP.
+RNBQK
+
+? 00:50.394 04:58.450
+b6-a6
+
+
+39 B
+k.bnr
+pqppp
+.p...
+.P..P
+PBPP.
+RN.QK
+
+? 00:50.354 04:58.406
+a6-b6
+
+
+40 B
+.kbnr
+pqppp
+.p...
+.P..P
+PBPP.
+RNQ.K
+
+? 00:50.315 04:58.365
+b6-a6
+= draw

@@ -779,12 +779,10 @@ void Player::Move_King(Move*& list,int& list_index,int& xpos, int& ypos,Peice & 
                 else if(Opponent(board[xpos][ypos], board[therex][therey])== true)
                 {
                     to_there.Set_Point(therex,therey);
-                    peicev = Peice_Value(board[therex][therey]);//DANGER!! MUST TAKE PEICE!!!  --Peice_Value(board[therex][therey]);
+                    peicev = Peice_Value(board[therex][therey]) + 10 ;//DANGER!! MUST TAKE PEICE!!!  --Peice_Value(board[therex][therey]);
                     list[list_index].S_Move(to_there,from_here, peicev, board[therex][therey]);
                     ++list_index;
-                    //                    break;
                 }//teammate peice: dont check any further down this path
-                //                   else break;
             }
         }
     }

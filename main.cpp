@@ -14,7 +14,7 @@ int main(int argc, char** argv)
 //    game.Priority();
 //    game.Nega_VS_ABP();
     game.imcsplay(argc,argv);
-
+//    game.ID_VS_AB_Nega();
 /*
     clock_t t1,t2;
     t1=clock();

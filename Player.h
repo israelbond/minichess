@@ -17,8 +17,8 @@
 #include <time.h>
 #include <unistd.h>
 const int DEPTH = 8;
-const int DRAW_D = 40;
-const int T_MIN = 5;
+const int DRAW_D = 42;
+const int T_MIN = 6.9;//5
 const int T_MAX = 10;
 const int QUICK_TURN = 20;
 
@@ -46,6 +46,7 @@ class Novice: public Player
         char* Priority();
         char* Go();
         char* ID_Wrapper();
+        void ID_VS_AB_Nega();
         int Iterative_Deepening(int&);
         void Create_M(char move[]);
         void Opp_Move(char[]);
