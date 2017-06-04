@@ -6,16 +6,27 @@
     for evaluation and to initialize class object components*/
 #include "Player.h"
 
+void timing(void);
+
 int main(int argc, char** argv)
 {
-    srand(time(NULL));
     Novice game;
+   game.imcsplay(argc,argv);
+    return 0;
+/*------------   USED FOR TESTING PURPOSES   ----------------------*/
 //    game.Go();
 //    game.Priority();
-//    game.Nega_VS_ABP();
-    game.imcsplay(argc,argv);
+//    game.Nega_VS_ABP(); 
 //    game.ID_VS_AB_Nega();
-/*
+//    timing();
+
+}
+
+//testing out implemented timeing running function
+void timing()
+{
+
+    srand(time(NULL));
     clock_t t1,t2;
     t1=clock();
     t2=t1;
@@ -23,8 +34,6 @@ int main(int argc, char** argv)
         t2=clock();
     printf("Took %ld ticks to wait one second.\n",t2-t1);
     printf("this value should be the same as CLOCKS_PER_SEC which is %ld.\n",CLOCKS_PER_SEC);
-    */
-    return 0;
+ 
 }
-
 

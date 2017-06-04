@@ -19,7 +19,7 @@
 const int DEPTH = 8;
 const int DRAW_D = 42;
 const int T_MIN = 6.9;//5
-const int T_MAX = 10;
+const int T_MAX = 10.9;//10
 const int QUICK_TURN = 20;
 
 class NetProto

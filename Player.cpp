@@ -257,7 +257,8 @@ void Novice::imcsplay(int argc, char **argv) {
                           //call to method being used by Minichess player
                           char* mine = ID_Wrapper();// changed depending on the desired routine **//Go(); **//Priority();
                           plug.sendcmd(nf,mine);
-                          /*                          int t = readtimems(tl);
+                          /*          COMMENTED OUT IN ORDER TO STUDY STRUCTURE BUT NOT USE IMPLEMENTATION
+                                                      int t = readtimems(tl);
                                                       t = 95 * t / (100 * ((81 - s.ply) / 2));
                                                       struct move m = idnegamax(&s, t, 0);
                                                       logmsg("value %d at time %d depth %d for %s\n\n",
@@ -267,7 +268,8 @@ void Novice::imcsplay(int argc, char **argv) {
                                                       printstate(&s, 1);
                                                       if (ponder)
                                                       (void) idnegamax(&s, 0, nf);
-                                                      */                          continue;
+                                                      */                          
+                          continue;
                       }
             case '!':
                       assert(fgetc(nf) == '!');

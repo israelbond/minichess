@@ -51,14 +51,11 @@ Peice::~Peice()
  *  The next 7 methods create dynamically allocated arrays which store the 
  *  particulars on the possible moves that piece can perfom. Each function
  *  manually sets all variables.  
- *          NOTE!!
- *          all type variables have been commented out as they seemed redundant 
- *          once i reached a certin point in programming this assignment*/
+*/
 
 void Peice::S_B_Pawn()
 {
 
-//    type = 'p';
     dim.Set_Point(1,3);
     score = 1;
     shape = new Point*[dim.x];
@@ -72,7 +69,6 @@ void Peice::S_B_Pawn()
 
  void Peice::S_W_Pawn()
 {
-//    type = 'P';
     dim.Set_Point(1,3);
     score = 1;
      shape = new Point*[dim.x];
@@ -86,7 +82,6 @@ void Peice::S_B_Pawn()
 
 void Peice::S_King()
 {
-//    type = 'k';
     dim.Set_Point(2,4);
     score = 50;
       shape = new Point*[dim.x];
@@ -102,7 +97,6 @@ void Peice::S_King()
 
 void Peice::S_Queen()
 {
-//    type = 'q';
     dim.Set_Point(8,5);
     score = 9;
        shape = new Point*[dim.x];
@@ -148,7 +142,6 @@ void Peice::S_Queen()
 
 void Peice::S_Rook()
 {
-//    type = 'r';
     dim.Set_Point(4,5);
     score = 5;
     shape = new Point*[dim.x];
@@ -177,7 +170,6 @@ void Peice::S_Rook()
 
 void Peice::S_Knight()
 {
- //   type = 'n';
     dim.Set_Point(2,4);
     score = 3;
      shape = new Point*[dim.x];
@@ -193,7 +185,6 @@ void Peice::S_Knight()
 
 void Peice::S_Bishop()
 {
-//    type = 'b';
     dim.Set_Point(5,4);
     score = 3;
       shape = new Point*[dim.x];
@@ -219,7 +210,3 @@ void Peice::S_Bishop()
     shape[4][0].Set_Point(1,1);    shape[4][1].Set_Point(2,2);
     shape[4][2].Set_Point(3,3);    shape[4][3].Set_Point(4,4);
 }
-
-
-
-
